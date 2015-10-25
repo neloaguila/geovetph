@@ -1,0 +1,9 @@
+*.scssc
+assets/extras/regions/
+assets/extras/select_complete_disease_post.sql
+assets/extras/locationPopulator.js
+assets/extras/locationPopulator.php
+assets/extras/ncr.json
+assets/extras/regions.json
+*.kml
+*.kmz
