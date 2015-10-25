@@ -1,0 +1,248 @@
+@import 'extras';
+
+#main {
+	background: color('grey', 'lighten-3');
+
+	@media #{$small-and-down} {
+		overflow: auto;
+	}
+}
+
+#account-panel {
+	height: 100%;
+	background: #fff;
+	max-width: 320px;
+	position: relative;
+	padding-top: 20px;
+	z-index: 110;
+	@include color-text("light", "secondary");
+
+	@media #{$small-and-down} {
+		max-width: initial;
+		height: 100px;
+		padding-top: 10px;
+		font-size: 12px;
+	}
+
+	#name {
+		color: $secondary-color;
+		margin: 10px 0 20px 0;
+
+		@media #{$small-and-down} {
+			margin: 0;
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			margin-left: 10px;
+		}
+
+		#name-first {
+			font-size: 2.5em;
+
+			@media #{$medium-only} {
+				font-size: 2em;
+			}
+		}
+
+		#name-last {
+			font-size: 1.5em;
+
+			@media #{$medium-only} {
+				font-size: 1em;
+			}
+		}
+	}
+
+	#type {
+		@media #{$small-and-down} {
+			position: absolute;
+			bottom: 0;
+			right: 0;
+			margin-right: 10px;
+		}
+	}
+}
+
+#component-panel {
+	height: 100%;
+	min-width: calc(100% - 320px);
+	position: relative;
+
+	@media #{$small-and-down} {
+		min-width: initial;
+		padding: 0;
+	}
+
+	#cover-panel {
+		width: 100%;
+		height: 100%;
+		position: absolute;
+		top: 0;
+		left: 0;
+		z-index: 80;
+
+		&::after {
+			content: ' ';
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			top: 0;
+			left: 0;
+			background: $primary-color-dark;
+			transition: top 0.4s ease-out 0.1s;
+			will-change: top;
+		}
+
+		@media #{$medium-and-up} {
+			&.open {
+				#upper {
+					top: -70%;
+				}
+
+				#lower {
+					bottom: -20%;
+				}
+
+				&::after {
+					top: -88%;
+				}
+			}
+		}
+
+		@media #{$small-and-down} {
+			height: initial;
+			position: relative;
+		}
+
+		#upper {
+			width: 100%;
+			height: 80%;
+			position: relative;
+			top: 0;
+			left: 0;
+			background: $primary-color;
+			z-index: 100;
+			transition: top 0.3s ease-out;
+			will-change: top;
+
+			@media #{$small-and-down} {
+				height: 320px;
+			}
+
+			#content-navs {
+				width: 100%;
+				position: absolute;
+				bottom: calc((-36px * 1.5) / 2);
+				text-align: right;
+				padding-right: 20px;
+
+				li.nav {
+					margin-right: 8px;
+
+					&:last-child {
+						margin-right: 0;
+					}
+				}
+
+				@media #{$small-and-down} {
+					text-align: center;
+					padding-right: 0;
+				}
+			}
+		}
+
+		#lower {
+			width: 100%;
+			height: 20%;
+			position: relative;
+			bottom: 0;
+			left: 0;
+			background: color("grey", "lighten-4");
+			z-index: 90;
+			transition: bottom 0.3s ease-out;
+			will-change: bottom;
+		}
+	}
+
+	#content-panel {
+		width: 100%;
+		height: 75%;
+		position: absolute;
+		top: 18%;
+		z-index: 1;
+		margin: 0 auto;
+		overflow-x: hidden;
+
+		@media #{$small-and-down} {
+			top: 350px;
+			position: relative;
+			top: 0;
+		}
+
+		ul#contents {
+			width: 100%;
+			height: 100%;
+			position: relative;
+			left: 0;
+			transition: left 0.3s ease-out;
+			will-change: left;
+
+			li.content {
+				width: 100%;
+				height: 100%;
+				position: absolute;
+				top: 0;
+				padding: 0 30px;
+			}
+
+			$items: (diseases, notifications, contributors, logs, accounts);
+			@for $i from 1 through 5 {
+				&.#{nth($items, $i)}-open {
+					left: unquote(($i - 1) * -100 + "%");
+				}
+
+				##{nth($items, $i)}-panel {
+					left: unquote(($i - 1) * 100 + "%");
+				}
+			}
+		}
+	}
+}
+
+
+
+// #account-panel {
+// 	height: 100%;
+// 	background: #fff;
+// 	max-width: 330px;
+
+// 	@media #{$small-and-down} {
+// 		max-width: none;
+// 	}
+// }
+
+// #content-panel {
+// 	height: 100%;
+// 	min-width: calc(100% - 330px);
+
+// 	@media #{$small-and-down} {
+// 		min-width: none;
+// 	}
+
+// 	#nav-content {
+// 		background: $primary-color;
+
+// 		#text {
+// 			@include color-text("dark", "secondary");
+// 			font-size: 1.2em;
+// 		}
+// 	}
+
+// 	#main-content {
+
+// 	}
+
+// 	#hidden-content {
+
+// 	}
+// }

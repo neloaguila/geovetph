@@ -1,0 +1,35 @@
+var geovetphmap;
+
+function initApp() {
+	geovetphmap = new GeoVetPHMap({
+		mapCanvas: document.getElementById('map-canvas'),
+		addressManager: document.getElementById('address-manager'),
+		dataFilter: document.getElementById('data-filter')
+	});
+};
+
+$(window).on('load', function() {
+	initApp();
+});
+
+// Modernirz
+
+function transitionEndEventName () {
+    var i,
+        undefined,
+        el = document.createElement('div'),
+        transitions = {
+            'transition':'transitionend',
+            'OTransition':'otransitionend',  // oTransitionEnd in very old Opera
+            'MozTransition':'transitionend',
+            'WebkitTransition':'webkitTransitionEnd'
+        };
+
+    for (i in transitions) {
+        if (transitions.hasOwnProperty(i) && el.style[i] !== undefined) {
+            return transitions[i];
+        }
+    }
+
+    //TODO: throw 'TransitionEnd event is not supported in this browser'; 
+}

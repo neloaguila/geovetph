@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>GeoVetPH - Dashboards</title>
+		<!-- <link rel="stylesheet" type="text/css" href="css/materialize.css" media="screen,projection" /> -->
+		<link rel="stylesheet" type="text/css" href="css/dashboard.css" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta charset="UTF-8">
+	</head>
+	<body>
+		<div id="main" class="row">
+			<div id="account-panel" class="z-depth-3 col l3 m3 s12">
+				<div id="account-info">
+					Logged-in as:
+					<div id="name">
+						<div id="name-first">Raphael Nelo</div>
+						<div id="name-last">Aguila</div>
+					</div>
+					<hr class="hide-on-small-and-down"/>
+					<div id="type">Administrator</div>
+				</div>
+			</div>
+			<div id="component-panel" class="col l9 m9 s12">
+				<div id="cover-panel">
+					<div id="upper" class="z-depth-1">
+						<div id="logo">
+
+						</div>
+						<ul id="content-navs">
+							<li id="diseases-nav" class="nav btn-floating btn-large waves-effect waves-light tooltipped" data-target="0" data-position="top" data-delay="500" data-tooltip="Diseases Quick List">
+								<i class="mdi-maps-local-hospital"></i>
+							</li>
+							<li id="notifications-nav" class="nav btn-floating btn-large waves-effect waves-light tooltipped" data-target="1" data-position="top" data-delay="500" data-tooltip="Notifications">
+								<i class="mdi-social-notifications"></i>
+							</li>
+							<li id="contributors-nav" class="nav btn-floating btn-large waves-effect waves-light tooltipped" data-target="2" data-position="top" data-delay="500" data-tooltip="All Contributors">
+								<i class="mdi-social-people"></i>
+							</li>
+							<li id="logs-nav" class="nav btn-floating btn-large waves-effect waves-light tooltipped" data-target="3" data-position="top" data-delay="500" data-tooltip="Logs">
+								<i class="mdi-action-book"></i>
+							</li>
+							<li id="accounts-nav" class="nav btn-floating btn-large waves-effect waves-light tooltipped" data-target="4" data-position="top" data-delay="500" data-tooltip="My Account">
+								<i class="mdi-action-info"></i>
+							</li>
+						</ul>
+					</div>
+					<div id="lower" class="z-depth-1 hide-on-small-and-down">
+
+					</div>
+				</div>
+				<div id="content-panel">
+					<ul id="contents">
+						<li id="diseases-panel" class="content">
+							<!-- <table>
+						        <thead>
+						          <tr>
+						              <th data-field="id">Name</th>
+						              <th data-field="name">Item Name</th>
+						              <th data-field="price">Item Price</th>
+						          </tr>
+						        </thead>
+
+						        <tbody>
+						          <tr>
+						            <td>Alvin</td>
+						            <td>Eclair</td>
+						            <td>$0.87</td>
+						          </tr>
+						          <tr>
+						            <td>Alan</td>
+						            <td>Jellybean</td>
+						            <td>$3.76</td>
+						          </tr>
+						          <tr>
+						            <td>Jonathan</td>
+						            <td>Lollipop</td>
+						            <td>$7.00</td>
+						          </tr>
+						        </tbody>
+						      </table>
+						      <table>
+						        <thead>
+						          <tr>
+						              <th data-field="id">Name</th>
+						              <th data-field="name">Item Name</th>
+						              <th data-field="price">Item Price</th>
+						          </tr>
+						        </thead>
+
+						        <tbody>
+						          <tr>
+						            <td>Alvin</td>
+						            <td>Eclair</td>
+						            <td>$0.87</td>
+						          </tr>
+						          <tr>
+						            <td>Alan</td>
+						            <td>Jellybean</td>
+						            <td>$3.76</td>
+						          </tr>
+						          <tr>
+						            <td>Jonathan</td>
+						            <td>Lollipop</td>
+						            <td>$7.00</td>
+						          </tr>
+						        </tbody>
+						      </table>
+						      <table>
+						        <thead>
+						          <tr>
+						              <th data-field="id">Name</th>
+						              <th data-field="name">Item Name</th>
+						              <th data-field="price">Item Price</th>
+						          </tr>
+						        </thead>
+
+						        <tbody>
+						          <tr>
+						            <td>Alvin</td>
+						            <td>Eclair</td>
+						            <td>$0.87</td>
+						          </tr>
+						          <tr>
+						            <td>Alan</td>
+						            <td>Jellybean</td>
+						            <td>$3.76</td>
+						          </tr>
+						          <tr>
+						            <td>Jonathan</td>
+						            <td>Lollipop</td>
+						            <td>$7.00</td>
+						          </tr>
+						        </tbody>
+						      </table> -->
+						</li>
+						<li id="notifications-panel" class="content">
+<!-- <table>
+						        <thead>
+						          <tr>
+						              <th data-field="id">Name</th>
+						              <th data-field="name">Item Name</th>
+						              <th data-field="price">Item Price</th>
+						          </tr>
+						        </thead>
+
+						        <tbody>
+						          <tr>
+						            <td>Alvin</td>
+						            <td>Eclair</td>
+						            <td>$0.87</td>
+						          </tr>
+						          <tr>
+						            <td>Alan</td>
+						            <td>Jellybean</td>
+						            <td>$3.76</td>
+						          </tr>
+						          <tr>
+						            <td>Jonathan</td>
+						            <td>Lollipop</td>
+						            <td>$7.00</td>
+						          </tr>
+						        </tbody>
+						      </table> -->
+						</li>
+						<li id="contributors-panel" class="content">
+
+						</li>
+						<li id="logs-panel" class="content">
+
+						</li>
+						<li id="accounts-panel" class="content">
+
+						</li>
+					</ul>
+				</div>
+			</div>
+			
+			<!-- <div id="content-panel" class="col l9 m9 s12">
+				<div id="nav-content" class="card-panel">
+					<span id="text">Dashboard</span>
+					<div id="nav-maps" class="btn-flat right">
+						<span class="material-icons"></span>
+						<span class="">View Map</span>
+					</div>
+					<div id="nav-graphs" class="btn-flat right">
+						<span class="material-icons"></span>
+						<span class="">View Graphs</span>
+					</div>
+				</div>
+				<div id="main-content">
+					<div id="disease-panel">
+
+					</div>
+					<div id="admin-panel">
+						<div id="notifications-btn">
+
+						</div>
+						<div id="logs-btn">
+
+						</div>
+						<div id="contributors-btn">
+
+						</div>
+					</div>
+				</div>
+				<div id="hidden-content">
+					<div id="notifications-panel">
+
+					</div>
+					<div id="logs-content">
+
+					</div>
+					<div id="contributors-content">
+
+					</div>
+				</div>
+			</div> -->
+		</div>
+
+		<script type="text/javascript" src="js/jquery-1.11.3.min.js"></script>
+		<script type="text/javascript" src="js/bin/materialize.min.js"></script>
+		<script type="text/javascript" src="js/bin/dashboard.js"></script>
+		<!-- <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=places"></script> -->
+	</body>
+</html>

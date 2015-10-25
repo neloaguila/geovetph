@@ -1,0 +1,302 @@
+#data-filter {
+	width: 25px;
+	position: absolute;
+	top: 0;
+	left: 210px;
+
+	&-view {
+		width: 25px;
+		height: 25px;
+		overflow: hidden;
+		position: relative;
+		margin-top: 10px;
+		margin-bottom: 0;
+		will-change: width, height;
+		@include transition(width 0.3s ease-out, height 0.4s ease-out);
+
+		#data-filter-btn {
+			width: 25px;
+			height: 25px;
+			position: absolute;
+			top: 0;
+			right: 0;
+			padding: 0;
+			text-align: center;
+			@include color-text("light", "icon");
+			z-index: 10;
+
+			i.material-icons {
+				line-height: 25px;
+			}
+		}
+
+		&.open {
+			width: 380px;
+			height: 100%;
+		}
+	}
+
+	&-wrapper {
+		width: 380px;
+		padding: 0;
+		margin-bottom: 0;
+		position: relative;
+
+		#data-filter-form {
+			ul.collapsible {
+				box-shadow: none;
+
+				li .collapsible-header {
+					min-height: 25px;
+					line-height: 25px;
+				}
+
+				li .collapsible-body {
+					label {
+						left: 0;
+					}
+
+					.input-field {
+						width: 95%;
+						margin-left: auto;
+						margin-right: auto;
+						margin-top: 1rem;
+					}
+				}
+			}
+
+			#filter-location {
+				.input-field {
+					margin-top: 0;
+				}
+			}
+
+			#filter-animal {
+				.animal-item {
+					width: 95px;
+					height: 25px;
+					display: inline-block;
+					text-align: center;
+					line-height: 25px;
+					padding: 0;
+					background: color("grey", "lighten-2");
+					cursor: pointer;
+					@include transition(box-shadow 0.3s ease-out);
+					@include color-text("light", "text");
+					margin-bottom: 5px;
+					margin-top: 0px;
+
+					&:not(.control-btn).selected {
+						background: $primary-color;
+						@include color-text("dark", "text");
+					}
+				}
+
+				.control-btn {
+					width: calc(25% - 5px);
+					margin-left: 3px;
+
+					&.selected {
+						background: $link-color;
+						@include color-text("dark", "text");
+					}
+				}
+
+				.tabs {
+					width: 100%;
+					height: 30px;
+					background: transparent;
+
+					.tab {
+						height: 30px;
+						line-height: 30px;
+					}
+				}
+
+				.animal-list {
+					margin-bottom: 1rem;
+					margin-top: 10px;
+					min-height: 41px;
+					max-height: 200px;
+					overflow-y: auto;
+				}
+
+				#animal-clear {
+					background: $button-color;
+					@include color-text("dark", "text");
+
+					&.disabled {
+						background: $button-color-disabled;
+						cursor: default;
+						box-shadow: none;
+					}
+				}
+
+				#animal-select {
+					width: calc(50% - 5px);
+				}
+
+				#animal-select-panel {
+					height: 0;
+					overflow: hidden;
+					margin-top: 10px;
+					@include transition(height 0.3s ease-out);
+
+					&.open {
+						height: 100%;
+					}
+
+					#animal-group {
+						.animal-item {
+							margin-right: 5px;
+						}
+					}
+
+					#animal-species {
+						.animal-item {
+							width: calc(50% - 6px);
+							padding-bottom: 3px;
+							height: 100%;
+
+							.group {
+								line-height: 14px;
+								font-size: 10px;
+							}
+						}
+
+						.animal-item:nth-child(odd) {
+							margin-right: 5px;
+						}
+					}
+				}
+			}
+
+			#filter-disease {
+				#disease-list {
+					margin-bottom: 1rem;
+					min-height: 41px;
+					max-height: 200px;
+					overflow-y: auto;
+
+					.disease-item {
+						width: 290px;
+						height: 25px;
+						text-align: center;
+						line-height: 25px;
+						padding: 0;
+						margin: 5px;
+						background: color("grey", "lighten-2");
+						cursor: pointer;
+						@include transition(box-shadow 0.3s ease-out);
+						@include color-text("light", "text");
+
+						&:not(.control-btn).selected {
+							background: $primary-color;
+							@include color-text("dark", "text");
+						}
+
+						span {
+							display: inline-block;
+						}
+
+						span.name {
+							float: left;
+							margin-left: 10px;
+						}
+
+						span.strain {
+							float: right;
+							margin-right: 10px;
+							font-size: 10px;
+							font-style: italic;
+							font-weight: 300;
+						}
+					}
+
+					#disease-clear {
+						margin-left: 0;
+						background: $button-color;
+						@include color-text("dark", "text");
+
+						&.disabled {
+							background: $button-color-disabled;
+							cursor: default;
+							box-shadow: none;
+						}
+					}
+
+					.control-btn {
+						width: 143px;
+						display: inline-block;
+						margin: 0 5px 0 5px;
+
+						&.selected {
+							background: $link-color;
+							@include color-text("dark", "text");
+						}
+					}
+				}
+			}
+
+			#filter-date {
+				.select-wrapper {
+					input {
+						line-height: 14px;
+						font-size: 1em;
+						height: 2.5rem;
+					}
+
+					li {
+						line-height: 14px;
+
+						span {
+							font-size: 1em;
+							padding: 10px 10px;
+						}
+					}
+				}
+
+				#date-select {
+					display: block;
+
+					&.hidden {
+						display: none;
+					}
+
+					span {
+						width: 50%;
+
+						input {
+							height: 2em;
+						}
+					}
+
+					#from {
+						padding: 0 3px 0 0;
+					}
+
+					#to {
+						padding: 0 0 0 3px;
+					}
+				}
+			}
+		}
+
+		.card-action {
+			padding-top: 10px;
+			padding-bottom: 10px;
+			text-align: right;
+
+			a {
+				margin: 0;
+			}
+		}
+
+		#filter-submit {
+			background: $primary-color;
+			@include color-text('dark', 'secondary');
+		}
+	}
+
+	
+}

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>GeoVetPH</title>
+		<!-- <link rel="stylesheet" type="text/css" href="css/font.css"> -->
+		<!-- <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/icon?family=Material+Icons" /> -->
+		<!-- <link rel="stylesheet" type="text/css" href="css/materialize.css" media="screen,projection" /> -->
+		<link rel="stylesheet" type="text/css" href="assets/css/main.css" media="screen,projection"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta charset="UTF-8">
+	</head>
+	<body>
+		<div id="main">
+			<div id="map">
+				<div id="map-canvas"></div>
+				<div id="map-action">
+					<div id="address-manager"></div>
+					<div id="data-filter">
+						<div id="data-filter-view" class="card grey lighten-5">
+							<div id="data-filter-btn" class="grey lighten-5 btn-flat">
+								<i class="material-icons mdi-action-search small"></i>
+							</div>
+							<div id="data-filter-wrapper">
+								<div class="card-content">
+									<div class="card-title black-text">Filter Data</div>
+									<form id="data-filter-form">
+										<ul class="collapsible" data-collapsible="accordion">
+											<li id="filter-location">
+												<div class="collapsible-header">
+													Location:
+													<span id="curr-location" class="right"></span>
+												</div>
+												<div class="collapsible-body">
+													<div class="input-field">
+														<input type="text" id="location" />
+													</div>
+												</div>
+											</li>
+											<li id="filter-animal">
+												<div class="collapsible-header">
+													Animal:
+													<span id="curr-animal" class="right"></span>
+												</div>
+												<div class="collapsible-body">
+													<div class="input-field">
+														<div id="animal-all" class="animal-item control-btn card-panel z-depth-1 selected">All</div>
+														<div id="animal-clear" class="animal-item control-btn card-panel z-depth-1">Clear All</div>
+														<div id="animal-select" class="animal-item control-btn card-panel z-depth-0">Select</div>
+														<div id="animal-select-panel">
+															<ul class="tabs">
+																<li class="tab"><a href="#animal-group">Animal Group</a></li>
+																<li class="tab"><a href="#animal-species">Animal Species</a></li>
+															</ul>
+															<div id="animal-group">
+																<ul class="animal-list"></ul>
+															</div>
+															<div id="animal-species">
+																<ul class="animal-list"></ul>
+															</div>
+														</div>
+													</div>
+												</div>
+											</li>
+											<li id="filter-disease">
+												<div class="collapsible-header">
+													Disease:
+													<span id="curr-disease" class="right"></span>
+												</div>
+												<div class="collapsible-body">
+													<div class="input-field">
+														<ul id="disease-list"></ul>
+													</div>
+												</div>
+											</li>
+											<li id="filter-date">
+												<div class="collapsible-header">
+													Date:
+													<span id="curr-date" class="right"></span>
+												</div>
+												<div class="collapsible-body">
+													<div class="input-field">
+														<select id="date">
+															<option>Today</option>
+															<option>Past 2 days</option>
+															<option>Past 3 days</option>
+															<option>Past 4 days</option>
+															<option>Past 5 days</option>
+															<option>Past 6 days</option>
+															<option>Past week</option>
+															<option>Past 2 weeks</option>
+															<option>Past month</option>
+															<option>Others...</option>
+														</select>
+														<div id="date-select" class="hidden">
+															<span id="from">
+																From
+																<input type="date" class="datepicker" id="date-from" />
+															</span>
+															<span id="to">
+																To
+																<input type="date" class="datepicker" id="date-to" />
+															</span>
+														</div>
+													</div>
+												</div>
+											</li>
+										</ul>
+									</form>
+								</div>
+								<div class="card-action">
+									<a id="filter-reset" class="btn-flat">Reset Selections</a>
+									<a id="filter-submit" class="btn-flat waves-effect waves-light">Filter Results</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- scripts for plugins -->
+		<script type="text/javascript" src="plugins/jquery/jquery-1.11.3.min.js"></script>
+		<script type="text/javascript" src="plugins/jquery/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="plugins/materialize/js/bin/materialize.min.js"></script>
+		<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=places"></script>
+
+		<!-- scripts for assets -->
+		<script type="text/javascript" src="assets/js/address_manager.js"></script>
+		<script type="text/javascript" src="assets/js/data_filter.js"></script>
+		<script type="text/javascript" src="assets/js/data_manager.js"></script>
+		<script type="text/javascript" src="assets/js/geovetph-map.js"></script>
+		<script type="text/javascript" src="assets/js/index.js"></script>
+	</body>
+</html>

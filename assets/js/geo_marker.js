@@ -1,0 +1,7 @@
+function GeoMarker() {
+
+}
+
+GeoMarker.prototype = {
+
+}
