@@ -83,7 +83,7 @@ function GeoVetPHMap(options) {
 
 	var map = new google.maps.Map(options.mapCanvas, mapProperties);
 	var geocoder = new google.maps.Geocoder();
-	var dataManager = new DataManager(this.define.defaultFilter);
+	var dataManager = new DataManager(map, this.define.defaultFilter);
 	var addressManager = new AddressManager(options.addressManager, dataManager);
 	var dataFilter = new DataFilter(options.dataFilter, this.define.defaultFilter);
 

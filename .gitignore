@@ -7,3 +7,4 @@ assets/extras/ncr.json
 assets/extras/regions.json
 *.kml
 *.kmz
+assets/extras/sql/select_complete_disease_post.sql

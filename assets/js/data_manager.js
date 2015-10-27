@@ -1,6 +1,7 @@
-function DataManager(defaultFilter) {
+function DataManager(map, defaultFilter) {
 	this.define = {
 		url: 'http://localhost/geovetph/server/index.php',
+		map: map,
 		previousFilter: null
 	};
 
@@ -69,34 +70,100 @@ DataManager.prototype = {
 	},
 
 	_clusterData: function(data) {
+		console.log(data);
+		console.log("DataManager.constructor: Data fetched");
+		var map = this.define.map;
+		var center = map.getCenter();
+		var options = {
+			latitude: center.lat(),
+			longitude: center.lng(),
+			count: 23,
+			severity: 1,
+			visibility: true
+		};
 
+		var gm = new GeoMarker(map, options);
+		google.maps.event.addDomListener(gm, 'click', function(){
+			console.log("Marker clicked!");
+		});
+
+		google.maps.event.addDomListener(gm, 'mouseover', function() {
+			console.log("Marker mouse over!");
+		});
+
+		google.maps.event.addDomListener(gm, 'mouseout', function() {
+			console.log("Marker mouse out!");
+		});
 	}
 };
 
-function DataCluster(options, style) {
-	this.define = {
-		name: options.name,
-		type: options.type,
-		id: options.id,
-		details: option.details || {}, // severity, itemCount
-		subClusters: options.subClusters || [],
-		style: style
-	};
+// function DataCluster(options) {
+// 	this.define = {
+// 		name: options.name,
+// 		type: options.type,
+// 		id: options.id,
+// 		severity: options.severity || 0,
+// 		subClusters: options.subClusters || [],
+// 		details: options.details || {}
+// 	};
 
-	this.define.details.itemCount = this.define.subClusters.length;
-}
+// 	this.define.itemCount = this.define.subClusters.length;
+// 	this.define.clusterIcon = new GeoMarker(this.define.severity, this.define.itemCount);
+// }
 
-DataCluster.prototype = {
-	_restyle: function() {
+// DataCluster.prototype = {
+// 	_restyle: function() {
 
-	},
+// 	},
 	
-	add: function(item) {
-		this.define.details.itemCount++;
-		if(this.define.details.severity < item.severity) this.define.details.severity;
-		this._restyle();
-	}
-}
+// 	addItem: function(item, displayFlag) {
+// 		this.define.itemCount++;
+// 		this.define.clusterIcon.updateItemCount(this.define.itemCount);
+// 		if(this.define.severity < item.severity) {
+// 			this.define.severity;
+// 			this.define.clusterIcon.updateSeverity(this.define.severity);
+// 		}
+// 		if(displayFlag) this.define.clusterIcon.show();
+// 	},
+
+// 	removeItem: function() {
+
+// 	}
+
+// 	getName: function() {
+// 		return this.define.name;
+// 	},
+
+// 	getType: function() {
+// 		return this.define.type;
+// 	},
+
+// 	getId: function() {
+// 		return this.define.id;
+// 	},
+
+// 	getSeverity: function() {
+// 		return this.define.severity;
+// 	},
+
+// 	getSubClusters: function() {
+// 		return this.define.subClusters;
+// 	},
+
+// 	getDetails: function() {
+// 		return this.define.details;
+// 	},
+
+// 	setSeverity: function(level) {
+// 		this.define.severity = level;
+// 		this.
+// 	},
+
+// 	setDetails: function(details, mergeFlag) {
+// 		if(mergeFlag) this.define.details.extend(details);
+// 		else this.define.details = details;
+// 	}
+// }
 
 /**
 * 	filter format
