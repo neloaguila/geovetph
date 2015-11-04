@@ -1,0 +1,27 @@
+%mapButtons {
+	height: 25px;
+	margin: 10px 10px 0 0;
+	line-height: 25px;
+}
+
+#login-button {
+	@extend %mapButtons;
+}
+
+#signup-button {
+	@extend %mapButtons;
+}
+
+#graph-button {
+	@extend %mapButtons;
+	@include color-text("light", "icon");
+	width: 25px;
+	padding: 0;
+}
+
+#legend-button {
+	@extend %mapButtons;
+	@include color-text("light", "icon");
+	width: 25px;
+	padding: 0;
+}

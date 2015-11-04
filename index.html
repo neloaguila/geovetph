@@ -14,11 +14,15 @@
 			<div id="map">
 				<div id="map-canvas"></div>
 				<div id="map-action">
-					<div id="address-manager"></div>
+					<div id="address-manager">
+						<div id="country" class="card-panel valign-wrapper btn waves-effect waves-red grey lighten-5">
+							<div class="valign">Philippines</div>
+						</div>
+					</div>
 					<div id="data-filter">
 						<div id="data-filter-view" class="card grey lighten-5">
-							<div id="data-filter-btn" class="grey lighten-5 btn-flat">
-								<i class="material-icons mdi-action-search small"></i>
+							<div id="data-filter-btn" class="grey lighten-5 btn-flat valign-wrapper">
+								<i class="material-icons mdi-content-filter-list small valign"></i>
 							</div>
 							<div id="data-filter-wrapper">
 								<div class="card-content">
@@ -72,6 +76,17 @@
 													</div>
 												</div>
 											</li>
+											<li id="filter-severity">
+												<div class="collapsible-header">
+													Severity:
+													<span id="curr-severity" class="right"></span>
+												</div>
+												<div class="collapsible-body">
+													<div class="input-field">
+														<ul id="severity-list"></ul>
+													</div>
+												</div>
+											</li>
 											<li id="filter-date">
 												<div class="collapsible-header">
 													Date:
@@ -114,6 +129,26 @@
 							</div>
 						</div>
 					</div>
+					<div id="zoom-control">
+						<div id="zoom-out" class="card-panel btn grey lighten-5 valign-wrapper">
+							<i class="material-icons mdi-content-remove small valign"></i>
+						</div>
+						<div id="zoom-in" class="card-panel btn grey lighten-5 valign-wrapper">
+							<i class="material-icons mdi-content-add small valign"></i>
+						</div>
+					</div>
+					<div id="legend-button" class="card-panel btn grey lighten-5 valign-wrapper right">
+						<i class="material-icons mdi-image-details tiny valign"></i>
+					</div>
+					<div id="graph-button" class="card-panel btn grey lighten-5 valign-wrapper right">
+						<i class="material-icons mdi-action-trending-up tiny valign"></i>
+					</div>
+					<div id="signup-button" class="card-panel btn light-green valign-wrapper right">
+						Sign-up
+					</div>
+					<div id="login-button" class="card-panel btn light-green valign-wrapper right">
+						Log-in
+					</div>
 				</div>
 			</div>
 		</div>
@@ -122,14 +157,15 @@
 		<script type="text/javascript" src="plugins/jquery/jquery-1.11.3.min.js"></script>
 		<script type="text/javascript" src="plugins/jquery/jquery-ui.min.js"></script>
 		<script type="text/javascript" src="plugins/materialize/js/bin/materialize.min.js"></script>
-		<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=places"></script>
+		<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyCnwisKFr70RqpZ5YARgGtp5r9tSUf0Tzo"></script>
 
 		<!-- scripts for assets -->
 		<script type="text/javascript" src="assets/js/address_manager.js"></script>
 		<script type="text/javascript" src="assets/js/data_filter.js"></script>
 		<script type="text/javascript" src="assets/js/geo_marker.js"></script>
+		<script type="text/javascript" src="assets/js/geo_cluster.js"></script>
 		<script type="text/javascript" src="assets/js/data_manager.js"></script>
-		<script type="text/javascript" src="assets/js/geovetph-map.js"></script>
+		<script type="text/javascript" src="assets/js/geovetph_map.js"></script>
 		<script type="text/javascript" src="assets/js/index.js"></script>
 	</body>
 </html>

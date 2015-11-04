@@ -3,6 +3,7 @@
 	position: absolute;
 	top: 0;
 	left: 210px;
+	z-index: 5;
 
 	&-view {
 		width: 25px;
@@ -12,7 +13,7 @@
 		margin-top: 10px;
 		margin-bottom: 0;
 		will-change: width, height;
-		@include transition(width 0.3s ease-out, height 0.4s ease-out);
+		@include transition(width 0.3s ease-out, height 0.4s ease-out, box-shadow 0.2s ease-out);
 
 		#data-filter-btn {
 			width: 25px;
@@ -33,6 +34,10 @@
 		&.open {
 			width: 380px;
 			height: 100%;
+		}
+
+		&:hover {
+			box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.18), 0 4px 15px 0 rgba(0, 0, 0, 0.15);
 		}
 	}
 
@@ -232,6 +237,32 @@
 
 						&.selected {
 							background: $link-color;
+							@include color-text("dark", "text");
+						}
+					}
+				}
+			}
+
+			#filter-severity {
+				#severity-list {
+					margin-bottom: 1rem;
+					text-align: center;
+
+					.severity-item {
+						width: 100px;
+						height: 25px;
+						display: inline-block;
+						text-align: center;
+						line-height: 25px;
+						padding: 0;
+						background: color("grey", "lighten-2");
+						cursor: pointer;
+						@include transition(box-shadow 0.3s ease-out);
+						@include color-text("light", "text");
+						margin: 5px 5px 5px 0;
+
+						&.selected {
+							background: $primary-color;
 							@include color-text("dark", "text");
 						}
 					}

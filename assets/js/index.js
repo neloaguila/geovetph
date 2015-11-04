@@ -4,7 +4,8 @@ function initApp() {
 	geovetphmap = new GeoVetPHMap({
 		mapCanvas: document.getElementById('map-canvas'),
 		addressManager: document.getElementById('address-manager'),
-		dataFilter: document.getElementById('data-filter')
+		dataFilter: document.getElementById('data-filter'),
+		zoomControl: document.getElementById('zooom-control')
 	});
 };
 
@@ -30,6 +31,5 @@ function transitionEndEventName () {
             return transitions[i];
         }
     }
-
     //TODO: throw 'TransitionEnd event is not supported in this browser'; 
 }
