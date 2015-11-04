@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 08, 2015 at 12:54 PM
+-- Generation Time: Nov 04, 2015 at 03:49 PM
 -- Server version: 5.6.17
 -- PHP Version: 5.5.12
 
@@ -31,7 +31,8 @@ CREATE TABLE IF NOT EXISTS `animal` (
   `common_name` varchar(30) NOT NULL,
   `animal_group` varchar(20) NOT NULL,
   PRIMARY KEY (`animal_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=21 ;
+
 
 -- --------------------------------------------------------
 
@@ -44,7 +45,8 @@ CREATE TABLE IF NOT EXISTS `disease` (
   `disease_name` varchar(50) NOT NULL,
   `strain` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`disease_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=19 ;
+
 
 -- --------------------------------------------------------
 
@@ -58,6 +60,7 @@ CREATE TABLE IF NOT EXISTS `disease_post` (
   `animal_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `locality_id` int(11) NOT NULL,
+  `severity` int(1) NOT NULL,
   `date_posted` date NOT NULL,
   `message` text,
   PRIMARY KEY (`post_id`),
@@ -65,7 +68,8 @@ CREATE TABLE IF NOT EXISTS `disease_post` (
   KEY `animal_id` (`animal_id`),
   KEY `user_id` (`user_id`),
   KEY `locality_id` (`locality_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1691 ;
+
 
 -- --------------------------------------------------------
 
@@ -78,7 +82,8 @@ CREATE TABLE IF NOT EXISTS `institute` (
   `institute_name` varchar(50) NOT NULL,
   `institute_address` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`institute_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
+
 
 -- --------------------------------------------------------
 
@@ -90,10 +95,14 @@ CREATE TABLE IF NOT EXISTS `locality` (
   `locality_id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
   `locality_type` varchar(20) NOT NULL,
+  `longitude` decimal(10,7) DEFAULT NULL,
+  `latitude` decimal(10,7) DEFAULT NULL,
+  `date_modified` datetime DEFAULT NULL,
   `province_id` int(11) NOT NULL,
   PRIMARY KEY (`locality_id`),
   KEY `province_id` (`province_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1631 ;
+
 
 -- --------------------------------------------------------
 
@@ -108,6 +117,7 @@ CREATE TABLE IF NOT EXISTS `log` (
   PRIMARY KEY (`log_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
+
 -- --------------------------------------------------------
 
 --
@@ -121,7 +131,8 @@ CREATE TABLE IF NOT EXISTS `membership` (
   `date_verified` date DEFAULT NULL,
   `date_seen` date DEFAULT NULL,
   PRIMARY KEY (`membership_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
+
 
 -- --------------------------------------------------------
 
@@ -132,10 +143,14 @@ CREATE TABLE IF NOT EXISTS `membership` (
 CREATE TABLE IF NOT EXISTS `province` (
   `province_id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
+  `longitude` decimal(10,7) DEFAULT NULL,
+  `latitude` decimal(10,7) DEFAULT NULL,
+  `date_modified` datetime DEFAULT NULL,
   `region_id` int(11) NOT NULL,
   PRIMARY KEY (`province_id`),
   KEY `region_id` (`region_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=83 ;
+
 
 -- --------------------------------------------------------
 
@@ -147,8 +162,12 @@ CREATE TABLE IF NOT EXISTS `region` (
   `region_id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(20) NOT NULL,
   `long_name` varchar(50) NOT NULL,
+  `longitude` decimal(10,7) DEFAULT NULL,
+  `latitude` decimal(10,7) DEFAULT NULL,
+  `date_modified` datetime DEFAULT NULL,
   PRIMARY KEY (`region_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=18 ;
+
 
 -- --------------------------------------------------------
 
@@ -169,7 +188,8 @@ CREATE TABLE IF NOT EXISTS `user` (
   PRIMARY KEY (`user_id`),
   KEY `institute_id` (`institute_id`),
   KEY `membership_id` (`membership_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
+
 
 --
 -- Constraints for dumped tables

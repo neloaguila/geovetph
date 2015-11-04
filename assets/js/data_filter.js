@@ -6,6 +6,7 @@ function DataFilter(element, defaultFilter) {
 		location: {},
 		animal: {},
 		disease: {},
+		severity: {},
 		date: {}
 	};
 
@@ -34,7 +35,20 @@ function DataFilter(element, defaultFilter) {
 		this.define.disease.defaultValue = "All";
 	}
 
-	if(["Today", "Past 2 days", "Past 3 days", "Past 4 days", "Past 5 days", "Past 6 days", "Past week", "Past 2 weeks", "Past month"].includes(defaultFilter.date.selected))
+	if(Array.isArray(defaultFilter.severity) &&
+		defaultFilter.severity.length !== 0)
+			this.define.severity.defaultValue = defaultFilter.severity;
+	else {
+		// changing default value for severity is not yet available
+		this.define.severity = [
+			{name: "Alert", selected: true},
+			{name: "Warning", selected: true},
+			{name: "Outbreak", selected: true}
+		];
+	}
+
+	var defaults = ["Today", "Past 2 days", "Past 3 days", "Past 4 days", "Past 5 days", "Past 6 days", "Past week", "Past 2 weeks", "Past month"];
+	if(defaults.includes(defaultFilter.date.selected))
 		this.define.date.defaultValue = defaultFilter.date.selected;
 	else this.define.date.defaultValue = "Past week";
 
@@ -46,17 +60,18 @@ DataFilter.prototype = {
 	_initializeComponents: function() {
 		var elem = this.define.elem;
 
-		this._initializeLocation($(elem).find('#filter-location'));
-		this._initializeAnimal($(elem).find('#filter-animal'));
-		this._initializeDisease($(elem).find('#filter-disease'));
-		this._initializeDate($(elem).find('#filter-date'));
+		this._initializeLocation();
+		this._initializeAnimal();
+		this._initializeDisease();
+		this._initializeSeverity();
+		this._initializeDate();
 	},
 
-	_initializeLocation: function(elem) {
+	_initializeLocation: function() {
 		var locationValues = this.define.location;
 		var self = this;
 
-		elem.find('#curr-location').html("All");
+		$('#curr-location').html("All");
 		locationValues.currentValue = locationValues.defaultValue;
 		
 		var autocompleteOptions = {
@@ -66,19 +81,19 @@ DataFilter.prototype = {
 		this.define.autocomplete = new google.maps.places.Autocomplete(document.getElementById('location'), autocompleteOptions);
 		this.define.autocomplete.addListener('place_changed', function() {
 			var locationValue = self.define.autocomplete.getPlace();
-			elem.find('#curr-location').html(locationValue.name);
+			$('#curr-location').html(locationValue.name);
 			locationValues.currentValue = locationValue;
 		});
 
 		$('#location').on('keyup', function() {
 			if($(this).val() === "") {
-				elem.find('#curr-location').html("All");
+				$('#curr-location').html("All");
 				locationValues.currentValue = "All";	
 			}
 		});
 	},
 
-	_initializeAnimal: function(elem) {
+	_initializeAnimal: function() {
 		var animalValues = this.define.animal;
 		var self = this;
 		var _populateElement = function(results, animalValues) {
@@ -125,11 +140,11 @@ DataFilter.prototype = {
 			$('#curr-animal').html("All");
 
 			$('#animal-all').on('click', function() {
-				self._selectAllAnimals();
+				selectAllAnimals();
 			});
 
 			$('#animal-clear:not(.disabled)').on('click', function() {
-				self._clearAllAnimals();
+				clearAllAnimals();
 			});
 
 			$('#animal-select').on('click', function() {
@@ -147,21 +162,145 @@ DataFilter.prototype = {
 
 			$('#animal-group .animal-item').on('click', function() {
 				if($(this).hasClass('selected')) {
-					self._clearAllAnimals(this);
+					clearAllAnimals(this);
 				}
 				else {
-					self._selectAllAnimals(this);
+					selectAllAnimals(this);
 				}
 			});
 
 			$('#animal-species .animal-item').on('click', function() {
 				if($(this).hasClass('selected')) {
-					self._unselectAnimal(this);
+					unselectAnimal(this);
 				}
 				else {
-					self._selectAnimal(this);
+					selectAnimal(this);
 				}
 			})
+		};
+		var selectAllAnimals = function(groupElem) {
+			if(groupElem === undefined) {
+				$('#curr-animal').html("All");
+				self.define.animal.currentValue = "All";
+				self.define.animal.selectedSpeciesCount = self.define.animal.speciesCount;
+				self.define.animal.selectedGroupCount = self.define.animal.groupCount;
+
+				$.each($('#animal-group .animal-item'), function(i, val) {
+					$(val).data('speciesSelected', $(val).data('speciesCount'));
+				});
+
+				self._toggleButton($('#animal-group .animal-item:not(.selected)'), 'select');
+				self._toggleButton($('#animal-species .animal-item:not(.selected)'), 'select');
+				self._toggleButton($('#animal-all'), 'select');
+			}
+			else {
+				self._toggleButton($(groupElem), 'select');
+				self.define.animal.selectedGroupCount++;
+				var group = $(groupElem).data('group');
+
+				$(groupElem).data('speciesSelected', $(groupElem).data('speciesCount'));
+
+				$.each($('#animal-species .animal-item:not(.selected)'), function(i, val) {
+					if($(val).data('group') === group) {
+						self._toggleButton($(val), 'select');
+						self.define.animal.selectedSpeciesCount++;
+					}
+				});
+
+				if(self.define.animal.selectedSpeciesCount === self.define.animal.speciesCount) {
+					self._toggleButton($('#animal-all'), 'select');
+					$('#curr-animal').html("All");
+					self.define.animal.currentValue = "All";
+				}
+				else {
+					$('#curr-animal').html("Selected "+self.define.animal.selectedSpeciesCount+" species");
+					self.define.animal.currentValue = "Selected";
+				}
+			}
+			$('#animal-clear').removeClass('disabled');
+		};
+		var clearAllAnimals = function(groupElem) {
+			if(groupElem === undefined) {
+				$('#curr-animal').html("Selected 0 species");
+				self.define.animal.selectedSpeciesCount = 0;
+				self.define.animal.selectedGroupCount = 0;
+
+				$.each($('#animal-group .animal-item'), function(i, val) {
+					$(val).data('speciesSelected', 0);
+				});
+
+				self._toggleButton($('#animal-group .animal-item'), 'unselect');
+				self._toggleButton($('#animal-species .animal-item'), 'unselect');
+			}
+			else {
+				self._toggleButton($(groupElem), 'unselect');
+				self.define.animal.selectedGroupCount--;
+				var group = $(groupElem).data('group');
+				var self = self;
+
+				$(groupElem).data('speciesSelected', 0);
+
+				$.each($('#animal-species .animal-item.selected'), function(i, val) {
+					if($(val).data('group') === group) {
+						self._toggleButton($(val), 'unselect');
+						self.define.animal.selectedSpeciesCount--;
+					}
+				});
+				$('#curr-animal').html("Selected "+self.define.animal.selectedSpeciesCount+" species");
+			}
+			self.define.animal.currentValue = "Selected";
+			self._toggleButton($('#animal-all'), 'unselect');
+			if(self.define.animal.selectedSpeciesCount === 0) $('#animal-clear').addClass('disabled');
+		};
+		var selectAnimal = function(speciesElem) {
+			self._toggleButton($(speciesElem), 'select');
+			self.define.animal.selectedSpeciesCount++;
+			var groupElem = findAnimalGroup($(speciesElem).data('group'));
+			var count = $(groupElem).data('speciesSelected');
+			$(groupElem).data('speciesSelected', count+1);
+
+			if($(groupElem).data('speciesSelected') === $(groupElem).data('speciesCount')) {
+				self.define.animal.selectedGroupCount++;
+				self._toggleButton($(groupElem), 'select');
+			}
+			$('#animal-clear').removeClass('disabled');
+
+			if(self.define.animal.selectedGroupCount === self.define.animal.groupCount) {
+				$('#curr-animal').html("All");
+				self.define.animal.currentValue = "All";
+				self.define.animal.selectedSpeciesCount = self.define.animal.speciesCount;
+				self.define.animal.selectedGroupCount = self.define.animal.groupCount;
+				self._toggleButton($('#animal-all'), 'select');
+			}
+			else {
+				$('#curr-animal').html("Selected "+self.define.animal.selectedSpeciesCount+" species");
+			}
+		};
+		var unselectAnimal = function(speciesElem) {
+			self._toggleButton($(speciesElem), 'unselect');
+			self._toggleButton($('#animal-all'), 'unselect');
+			self.define.animal.selectedSpeciesCount--;
+			var groupElem = findAnimalGroup($(speciesElem).data('group'));
+			var count = $(groupElem).data('speciesSelected');
+			$(groupElem).data('speciesSelected', count-1);
+
+			if($(groupElem).data('speciesSelected') !== $(groupElem).data('speciesCount')) {
+				self.define.animal.selectedGroupCount--;
+				self._toggleButton($(groupElem), 'unselect');
+			}
+
+			if(self.define.animal.selectedSpeciesCount === 0) $('#animal-clear').addClass('disabled');
+			$('#curr-animal').html("Selected "+self.define.animal.selectedSpeciesCount+" species");
+			self.define.animal.currentValue = "Selected";
+		};
+		var findAnimalGroup = function(group) {
+			var items = $('#animal-group .animal-item');
+			var itemLength = items.length;
+			for(var i=0; i<itemLength; i++) {
+				if($(items[i]).data('group') === group) {
+					return items[i];
+				}
+			}
 		};
 
 		animalValues.currentValue = animalValues.defaultValue;
@@ -187,142 +326,7 @@ DataFilter.prototype = {
 		});
 	},
 
-	_selectAllAnimals: function(groupElem) {
-		if(groupElem === undefined) {
-			$('#curr-animal').html("All");
-			this.define.animal.currentValue = "All";
-			this.define.animal.selectedSpeciesCount = this.define.animal.speciesCount;
-			this.define.animal.selectedGroupCount = this.define.animal.groupCount;
-
-			$.each($('#animal-group .animal-item'), function(i, val) {
-				$(val).data('speciesSelected', $(val).data('speciesCount'));
-			});
-
-			this._toggleButton($('#animal-group .animal-item:not(.selected)'), 'select');
-			this._toggleButton($('#animal-species .animal-item:not(.selected)'), 'select');
-			this._toggleButton($('#animal-all'), 'select');
-		}
-		else {
-			this._toggleButton($(groupElem), 'select');
-			this.define.animal.selectedGroupCount++;
-			var group = $(groupElem).data('group');
-			var self = this;
-
-			$(groupElem).data('speciesSelected', $(groupElem).data('speciesCount'));
-
-			$.each($('#animal-species .animal-item:not(.selected)'), function(i, val) {
-				if($(val).data('group') === group) {
-					self._toggleButton($(val), 'select');
-					self.define.animal.selectedSpeciesCount++;
-				}
-			});
-
-			if(this.define.animal.selectedSpeciesCount === this.define.animal.speciesCount) {
-				this._toggleButton($('#animal-all'), 'select');
-				$('#curr-animal').html("All");
-				this.define.animal.currentValue = "All";
-			}
-			else {
-				$('#curr-animal').html("Selected "+this.define.animal.selectedSpeciesCount+" species");
-				this.define.animal.currentValue = "Selected";
-			}
-		}
-		$('#animal-clear').removeClass('disabled');
-	},
-
-	_clearAllAnimals: function(groupElem) {
-		if(groupElem === undefined) {
-			$('#curr-animal').html("Selected 0 species");
-			this.define.animal.selectedSpeciesCount = 0;
-			this.define.animal.selectedGroupCount = 0;
-
-			$.each($('#animal-group .animal-item'), function(i, val) {
-				$(val).data('speciesSelected', 0);
-			});
-
-			this._toggleButton($('#animal-group .animal-item'), 'unselect');
-			this._toggleButton($('#animal-species .animal-item'), 'unselect');
-		}
-		else {
-			this._toggleButton($(groupElem), 'unselect');
-			this.define.animal.selectedGroupCount--;
-			var group = $(groupElem).data('group');
-			var self = this;
-
-			$(groupElem).data('speciesSelected', 0);
-
-			$.each($('#animal-species .animal-item.selected'), function(i, val) {
-				if($(val).data('group') === group) {
-					self._toggleButton($(val), 'unselect');
-					self.define.animal.selectedSpeciesCount--;
-				}
-			});
-			$('#curr-animal').html("Selected "+this.define.animal.selectedSpeciesCount+" species");
-		}
-		this.define.animal.currentValue = "Selected";
-		this._toggleButton($('#animal-all'), 'unselect');
-		if(this.define.animal.selectedSpeciesCount === 0) $('#animal-clear').addClass('disabled');
-	},
-
-	_selectAnimal: function(speciesElem) {
-		this._toggleButton($(speciesElem), 'select');
-		this.define.animal.selectedSpeciesCount++;
-		var groupElem = this._findAnimalGroup($(speciesElem).data('group'));
-		var count = $(groupElem).data('speciesSelected');
-		$(groupElem).data('speciesSelected', count+1);
-
-		if($(groupElem).data('speciesSelected') === $(groupElem).data('speciesCount')) {
-			this.define.animal.selectedGroupCount++;
-			this._toggleButton($(groupElem), 'select');
-		}
-		$('#animal-clear').removeClass('disabled');
-
-		if(this.define.animal.selectedGroupCount === this.define.animal.groupCount) {
-			$('#curr-animal').html("All");
-			this.define.animal.currentValue = "All";
-			this.define.animal.selectedSpeciesCount = this.define.animal.speciesCount;
-			this.define.animal.selectedGroupCount = this.define.animal.groupCount;
-			this._toggleButton($('#animal-all'), 'select');
-		}
-		else {
-			$('#curr-animal').html("Selected "+this.define.animal.selectedSpeciesCount+" species");
-		}
-	},
-
-	_unselectAnimal: function(speciesElem) {
-		this._toggleButton($(speciesElem), 'unselect');
-		this._toggleButton($('#animal-all'), 'unselect');
-		this.define.animal.selectedSpeciesCount--;
-		var groupElem = this._findAnimalGroup($(speciesElem).data('group'));
-		var count = $(groupElem).data('speciesSelected');
-		$(groupElem).data('speciesSelected', count-1);
-
-		if($(groupElem).data('speciesSelected') !== $(groupElem).data('speciesCount')) {
-			this.define.animal.selectedGroupCount--;
-			this._toggleButton($(groupElem), 'unselect');
-		}
-
-		if(this.define.animal.selectedSpeciesCount === 0) $('#animal-clear').addClass('disabled');
-		$('#curr-animal').html("Selected "+this.define.animal.selectedSpeciesCount+" species");
-		this.define.animal.currentValue = "Selected";
-	},
-
-	_toggleButton: function(elem, type) {
-			if(type === "select") elem.addClass('z-depth-1 selected').removeClass('z-depth-0');
-			else if(type === "unselect") elem.removeClass('z-depth-1 selected').addClass('z-depth-0');	
-	},
-
-	_findAnimalGroup: function(group) {
-		var items = $('#animal-group .animal-item');
-		var itemLength = items.length;
-		for(var i=0; i<itemLength; i++) {
-			if($(items[i]).data('group') === group) {
-				return items[i];
-			}
-		}
-	},
-
-	_initializeDisease: function(elem) {
+	_initializeDisease: function() {
 		var self = this;
 		var _populateElement = function(results) {
 			var $diseaseList = $('#disease-list');
@@ -416,7 +420,74 @@ DataFilter.prototype = {
 		})
 	},
 
-	_initializeDate: function(elem) {
+	_initializeSeverity: function() {
+		var self = this;
+		var severity = this.define.severity;
+		var defaultSeverity = severity.defaultValue;
+		var levelCount = defaultSeverity.length;
+		var $severityList = $('#severity-list');
+
+		severity.selectedSeverityCount = 0;
+		severity.severityCount = levelCount;
+
+		for(var i=0; i<levelCount; i++) {
+			var name = defaultSeverity[i].name;
+			var color = defaultSeverity[i].color;
+			var selected = defaultSeverity[i].selected;
+			var cls;
+
+			if(selected) {
+				severity.selectedSeverityCount++;
+				cls = 'severity-item card-panel z-index-1 selected'
+			}
+			else {
+				cls = 'severity-item card-panel z-index-0'
+			}
+
+			var $item = $('<div></div>', {
+				class: cls
+			});
+			$item.html(name);
+			$item.data('value', i);
+			if(color) $item.css('background', color);
+			$severityList.append($item);
+			$item.on('click', function() {
+				if($(this).hasClass('selected')) {
+					self._toggleButton($(this), 'unselect');
+					self.define.severity.selectedSeverityCount--;
+					$(this).css('background','');
+					if(self.define.severity.selectedSeverityCount === 1) {
+						$('#curr-severity').html("Selected 1 level");
+					}
+					else {
+						$('#curr-severity').html("Selected "+self.define.severity.selectedSeverityCount+" levels");
+					}
+					self.define.severity.currentValue = "Selected";
+				}
+				else {
+					self._toggleButton($(this), 'select');
+					self.define.severity.selectedSeverityCount++;
+					var color = self.define.severity.defaultValue[$(this).data('value')].color;
+					if(color) $(this).css('background', color);
+					if(self.define.severity.selectedSeverityCount === self.define.severity.severityCount) {
+						$('#curr-severity').html("All");
+						self.define.severity.currentValue = "All";
+					}
+				}
+			});
+		}
+
+		if(defaultSeverity.selectedSeverityCount === defaultSeverity.severityCount) {
+			defaultSeverity.currentValue = "All";
+			$('#curr-severity').html("All");
+		}
+		else {
+			defaultSeverity.currentValue = "Selected";
+			$('#curr-severity').html("Selected "+defaultSeverity.selectedSeverityCount+" levels");
+		}
+	},
+
+	_initializeDate: function() {
 		var self = this;
 		this.define.date.currentValue = this.define.date.defaultValue;
 
@@ -452,44 +523,9 @@ DataFilter.prototype = {
 		});
 	},
 
-	_initializeEvents: function() {
-		var self = this;
-		$('#data-filter-btn').on('click', function() {
-			if(self.define.opened) {
-				$($(this).find('i')).removeClass('mdi-navigation-close').addClass('mdi-action-search');
-				$(this).parent().css('overflow','hidden').removeClass('open');
-				self.define.opened = false;
-			}
-			else {
-				$($(this).find('i')).removeClass('mdi-action-search').addClass('mdi-navigation-close');
-				$(this).parent().addClass('open').one(transitionEndEventName(), function() {
-					$(this).css('overflow', 'visible');
-				});
-				self.define.opened = true;
-			}
-		});
-
-		$('#filter-reset').on('click', function() {
-			self._reset();
-		});
-
-		$('#filter-submit').on('click', function() {
-			$($('#data-filter-btn').find('i')).removeClass('mdi-navigation-close').addClass('mdi-action-search');
-			$('#data-filter-btn').parent().css('overflow','hidden').removeClass('open');
-			self.define.opened = false;
-			var filter = self._filterResults();
-
-			if(window.CustomEvent) {
-				var filterSubmit = new CustomEvent('filter_submit', {
-					detail: {
-						filterValue: filter
-					},
-					bubbles: true,
-					cancelable: true
-				});
-				self.define.elem.dispatchEvent(filterSubmit);
-			};
-		});
+	_toggleButton: function(elem, type) {
+			if(type === "select") elem.addClass('z-depth-1 selected').removeClass('z-depth-0');
+			else if(type === "unselect") elem.removeClass('z-depth-1 selected').addClass('z-depth-0');	
 	},
 
 	_reset: function() {
@@ -523,6 +559,40 @@ DataFilter.prototype = {
 			self._toggleButton($('#disease-all'), 'select');
 			self._toggleButton($('#disease-list .disease-item:not(.control-btn)'), 'select');
 		};
+		var resetSeverity = function() {
+			var severity = self.define.severity;
+			var defaultSeverity = severity.defaultValue;
+			var levelCount = defaultSeverity.length;
+			var severityLevels = $('#severity-list .severity-item');
+
+			severity.selectedSeverityCount = 0;
+			severity.severityCount = levelCount;
+
+			for(var i=0; i<levelCount; i++) {
+				var color = defaultSeverity[i].color;
+				var selected = defaultSeverity[i].selected;
+
+				if(selected) {
+					severity.selectedSeverityCount++;
+					self._toggleButton($(severityLevels[i]), 'select');
+					$(severityLevels[i]).css('background', color);
+				}
+				else {
+					severity.selectedSeverityCount--;
+					self._toggleButton($(severityLevels[i]), 'unselect');
+					$(severityLevels[i]).css('background', '');
+				}				
+			}
+
+			if(severity.selectedSeverityCount === severity.severityCount) {
+				severity.currentValue = "All";
+				$('#curr-severity').html("All");
+			}
+			else {
+				severity.currentValue = "Selected";
+				$('#curr-severity').html("Selected "+severity.selectedSeverityCount+" levels");
+			}
+		};
 		var resetDate = function() {
 			self.define.date.currentValue = self.define.date.defaultValue;
 			$('#date-from').val("");
@@ -543,6 +613,7 @@ DataFilter.prototype = {
 		resetLocation();
 		resetAnimal();
 		resetDisease();
+		resetSeverity();
 		resetDate();
 	},
 
@@ -554,6 +625,7 @@ DataFilter.prototype = {
 				},
 				animal: [],
 				disease: [],
+				severity: [],
 				date: {
 					from: "",
 					to: ""
@@ -595,6 +667,16 @@ DataFilter.prototype = {
 					};
 
 					filter.disease.push(JSON.parse(JSON.stringify(insert)));
+				}
+			}
+		};
+		var getSeverity = function() {
+			var currentSeverity = self.define.severity.currentValue;
+			if(currentValue !== "All") {
+				var selectedSeverity = $('#severity-list .severity-item.selected');
+				var selectedSeverityLength = selectedSeverity.length;
+				for(var i=0; i<selectedSeverityLength; i++) {
+					filter.severity.push($(selectedSeverity[i]).data('value'));
 				}
 			}
 		};
@@ -663,6 +745,46 @@ DataFilter.prototype = {
 		getDate();
 
 		return filter;
+	},
+
+	_initializeEvents: function() {
+		var self = this;
+		$('#data-filter-btn').on('click', function() {
+			if(self.define.opened) {
+				$($(this).find('i')).removeClass('mdi-navigation-close').addClass('mdi-action-search');
+				$(this).parent().css('overflow','hidden').removeClass('open');
+				self.define.opened = false;
+			}
+			else {
+				$($(this).find('i')).removeClass('mdi-action-search').addClass('mdi-navigation-close');
+				$(this).parent().addClass('open').one(transitionEndEventName(), function() {
+					$(this).css('overflow', 'visible');
+				});
+				self.define.opened = true;
+			}
+		});
+
+		$('#filter-reset').on('click', function() {
+			self._reset();
+		});
+
+		$('#filter-submit').on('click', function() {
+			$($('#data-filter-btn').find('i')).removeClass('mdi-navigation-close').addClass('mdi-action-search');
+			$('#data-filter-btn').parent().css('overflow','hidden').removeClass('open');
+			self.define.opened = false;
+			var filter = self._filterResults();
+
+			if(window.CustomEvent) {
+				var filterSubmit = new CustomEvent('filter_submit', {
+					detail: {
+						filterValue: filter
+					},
+					bubbles: true,
+					cancelable: true
+				});
+				self.define.elem.dispatchEvent(filterSubmit);
+			};
+		});
 	},
 
 	getElement: function() {

@@ -1,8 +1,7 @@
-function AddressManager(element, dataManager) {
+function AddressManager(element) {
 	this.define = {
 		url: 'http://localhost/geovetph/server/index.php',
 		elem: element,
-		dataManager: dataManager,
 		regionListOpen: false,
 		regionSelected: false,
 		region: null,
@@ -25,13 +24,8 @@ AddressManager.prototype = {
 	_initializeElement: function() {
 		var elem = this.define.elem;
 		var self = this;
-		var $country = $('<div></div>', {
-			id: 'country',
-			class: 'card-panel valign-wrapper btn waves-effect waves-red grey lighten-5'
-		});
-		$country.html('<div class="valign">Philippines</div>');
-		$(elem).append($country);
-		$country.on('click', function() {
+		var country = $(elem).find('#country');
+		$(country).on('click', function() {
 			self._openRegionList();
 		});
 	},

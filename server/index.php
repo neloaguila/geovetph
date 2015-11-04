@@ -67,18 +67,19 @@
 			$dateCondition = $this->formatDateCondition($filter->date);
 			$animalCondition = $this->formatAnimalCondition($filter->animal);
 			$diseaseCondition = $this->formatDiseaseCondition($filter->disease);
+			$severityCondition = $this->formatSeverityCondition($filter->severity);
 			$locationCondition = $this->formatLocationCondition($filter->location);
 
 			$stmt  = "SELECT ";
-			$stmt .= "post_id, user_id, date_posted, message, locality_id, locality_name, locality_type, province_id, province_name, region.region_id, region.name AS region_name, region.long_name AS region_long_name, common_name, animal_group, disease_name, strain ";
+			$stmt .= "post_id, user_id, date_posted, message, locality_id, locality_name, locality_type, locality_longitude, locality_latitude, province_id, province_name, province_longitude, province_latitude, region.region_id, region.name AS region_name, region.long_name AS region_long_name, longitude AS region_longitude, latitude AS region_latitude, common_name, animal_group, disease_name, strain ";
 			$stmt .= "FROM ";
 			$stmt .= "(";
 			$stmt .= "SELECT ";
-			$stmt .= "post_id, user_id, date_posted, message, locality_id, locality_name, locality_type, province.province_id, province.name AS province_name, region_id, common_name, animal_group, disease_name, strain ";
+			$stmt .= "post_id, user_id, date_posted, message, locality_id, locality_name, locality_type, locality_longitude, locality_latitude, province.province_id, province.name AS province_name, longitude AS province_longitude, latitude AS province_latitude, region_id, common_name, animal_group, disease_name, strain ";
     		$stmt .= "FROM ";
 			$stmt .= "(";
 			$stmt .= "SELECT ";
-			$stmt .= "post_id, user_id, date_posted, message, locality.locality_id, locality.name AS locality_name, locality_type, province_id, common_name, animal_group, disease_name, strain ";
+			$stmt .= "post_id, user_id, date_posted, message, locality.locality_id, locality.name AS locality_name, locality_type, longitude AS locality_longitude, latitude AS locality_latitude, province_id, common_name, animal_group, disease_name, strain ";
 			$stmt .= "FROM ";
 			$stmt .= "(";
 			$stmt .= "SELECT ";
@@ -88,6 +89,7 @@
 			$stmt .= "WHERE {$dateCondition}";
 			if($animalCondition) $stmt .= " AND {$animalCondition}";
 			if($diseaseCondition) $stmt .= " AND {$diseaseCondition}";
+			if($severityCondition) $stmt .= " AND {$severityCondition}";
 			if($locationCondition[0]) $stmt .= " AND {$locationCondition[0]}";
 			$stmt .= ") AS a ";
 			$stmt .= "LEFT JOIN locality ON a.locality_id = locality.locality_id ";
@@ -140,11 +142,36 @@
 			}
 		}
 
+		private function formatSeverityCondition($data) {
+			switch(count($data)) {
+				case 1:
+					return "(severity = {$data[0]})";
+					break;
+				case 0:
+					return false;
+				default:
+					return "(severity IN (" . join(",", $data) . "))";
+					break;
+			}
+		}
+
 		private function formatLocationCondition($data) {
 			$localityCondition = (is_null($data->localityId))? false : "(locality_id = {$data->localityId})";
 			$regionCondition = (is_null($data->regionId))? false : "(region_id = {$data->regionId})";
 			$provinceCondition = (is_null($data->provinceId))? false : "(province_id = {$data->provinceId})";
 			return [$localityCondition, $provinceCondition, $regionCondition];
+		}
+
+		public function checkLocationDateValidity() {
+			$data_duration = 7;
+			$updates = new stdClass();
+			$updates->longitude = "NULL";
+			$updates->latitude = "NULL";
+			$updates->date_modified = "NULL";
+			$conditions = "date_modified IS NOT NULL AND DATEDIFF(NOW(), date_modified) > {$data_duration}";
+			$this->update('region', $updates, $conditions);
+			$this->update('province', $updates, $conditions);
+			$this->update('locality', $updates, $conditions);
 		}
 
 		private function get($stmt) {
@@ -159,6 +186,38 @@
 			else {
 				return -1;
 			}
+		}
+
+		public function updateLatitudeLongitude($table, $id, $latitude, $longitude) {
+			$now = new DateTime();
+			$updates = new stdClass();
+			$updates->longitude = $longitude;
+			$updates->latitude = $latitude;
+			$updates->date_modified = "\"" . $now->format('Y-m-d H:i:s') . "\"";
+			$result = $this->update($table, $updates, "{$table}_id = {$id}");
+
+			$stmt = "UPDATE {$table} SET ";
+			$updateArray = [];
+			foreach ($updates as $key => $value) {
+				$updateString = $key . " = " . $value;
+				array_push($updateArray, $updateString);
+			}
+			$stmt .= join(", ", $updateArray);
+			$stmt .= " WHERE {$table}_id = {$id}";
+			echo $stmt;
+			var_dump($result);
+		}
+
+		private function update($table, $updates, $conditions = NULL) {
+			$stmt = "UPDATE {$table} SET ";
+			$updateArray = [];
+			foreach ($updates as $key => $value) {
+				$updateString = $key . " = " . $value;
+				array_push($updateArray, $updateString);
+			}
+			$stmt .= join(", ", $updateArray);
+			if(!is_null($conditions)) $stmt .= " WHERE " . $conditions;
+			return $this->mysqli->query($stmt);
 		}
 
 		// use prepared statements for inserts
@@ -222,9 +281,21 @@
 					break;
 				case 6: // get all disease_post filtered by the provided data; used by DataManager
 					$filter = json_decode($_POST['filter']);
+					$db->checkLocationDateValidity();
 					$results = $db->getDiseasePost($filter);
 					if($results) echo json_encode($results);
 					else echo $results;
+					break;
+			}
+			break;
+		case 'update':
+			switch($_POST['type']) {
+				case 0: // update longitude and latitude values for a table row; used by DataManager
+					$tableAffected = $_POST['table'];
+					$id = $_POST['id'];
+					$longitude = $_POST['longitude'];
+					$latitude = $_POST['latitude'];
+					echo $db->updateLatitudeLongitude($tableAffected, $id, $latitude, $longitude);
 					break;
 			}
 			break;

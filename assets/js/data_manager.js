@@ -1,20 +1,41 @@
-function DataManager(map, defaultFilter) {
+function DataManager(map, addressManager, defaultFilter) {
 	this.define = {
 		url: 'http://localhost/geovetph/server/index.php',
 		map: map,
-		previousFilter: null
+		addressManager: addressManager,
+		previousFilter: null,
+		localityClusters: [],
+		provinceClusters: [],
+		regionClusters: []
 	};
 
 	var defaultDate = {};
 	var self = this;
+	var filter = JSON.parse(JSON.stringify(defaultFilter));
+	var geocoderHelper = new GeocoderHelper(new google.maps.Geocoder());
+	this.define.geocoderHelper = geocoderHelper;
 
 	defaultDate.from = defaultFilter.date.from;
 	defaultDate.to = defaultFilter.date.to;
-	defaultFilter.date = defaultDate;
-	this.define.currentFilter = defaultFilter;
-	this._fetchData(this.define.currentFilter, function(results) {
-		self._clusterData(results);
-	});
+	filter.date = defaultDate;
+
+	var defaultSeverity = [];
+	var severity = defaultFilter.severity;
+	var severityLength = severity.length;
+	for(var i=0; i<severityLength; i++) {
+		if(severity[i].selected) {
+			defaultSeverity.push(i);
+		}
+	}
+	if(defaultSeverity.length === severityLength) defaultSeverity = [];
+	filter.severity = defaultSeverity;
+	this.define.currentFilter = filter;
+	// google.maps.event.addListenerOnce(map, 'tilesloaded', function() {
+		self._fetchData(self.define.currentFilter, function(results) {
+			self.define.data = results;
+			self._clusterData(self.define.data);
+		});
+	// });
 }
 
 DataManager.prototype = {
@@ -69,101 +90,297 @@ DataManager.prototype = {
 		}
 	},
 
+	getCurrentData: function() {
+		return this.define.data;
+	},
+
 	_clusterData: function(data) {
-		console.log(data);
-		console.log("DataManager.constructor: Data fetched");
-		var map = this.define.map;
-		var center = map.getCenter();
-		var options = {
-			latitude: center.lat(),
-			longitude: center.lng(),
-			count: 23,
-			severity: 1,
-			visibility: true
+		var dataLength = data.length;
+		var self = this;
+		var geocoderHelper = this.define.geocoderHelper;
+		var addToLocalityClusters = function(data, index) {
+			if(index < data.length) {
+				var item = data[index];
+
+				item.post_id = Number.parseInt(item.post_id);
+				item.locality_id = Number.parseInt(item.locality_id);
+				item.severity = Number.parseInt(item.severity);
+				
+				var localityClustersIndex = self._findLocalityCluster(item.locality_id);
+				var localityClusters = self.define.localityClusters;
+				var address = (item.province_name === "NCR")?
+					item.locality_name + ", NCR, Philippines" :
+					item.locality_name + ", " + item.province_name + ", " + item.region_long_name + ", Philippines";
+				var cluster;
+
+				if(localityClustersIndex === -1) {
+					cluster = new GeoCluster(self.define.map, {
+						name: address,
+						type: 'locality',
+						id: item.locality_id
+					});
+
+					if(item.locality_longitude !== null && item.locality_latitude !== null) {
+						item.locality_latitude = Number.parseFloat(item.locality_latitude);
+						item.locality_longitude = Number.parseFloat(item.locality_longitude);
+						cluster.setLatLng(item.locality_latitude, item.locality_longitude);
+					}
+					else geocoderHelper.addRequest(cluster);
+					
+					localityClusters.push(cluster);
+				}
+				else cluster = localityClusters[localityClustersIndex];
+
+				cluster.addPost({
+					postId: item.post_id,
+					severity: item.severity
+				});
+			}
+			else {
+				console.log("Finished locality clustering");
+			}
+			addToProvinceClusters(data, index);
+		};
+		var addToProvinceClusters = function(data, index) {
+			if(index < data.length) {
+				if(data[index].province_name !== "NCR") {
+					var item = data[index];
+
+					item.post_id = Number.parseInt(item.post_id);
+					item.province_id = Number.parseInt(item.province_id);
+
+					var provinceClustersIndex = self._findProvinceCluster(item.province_id);
+					var provinceClusters = self.define.provinceClusters;
+					var address = item.province_name + ", " + item.region_long_name + ", Philippines";
+					var cluster;
+
+					if(provinceClustersIndex === -1) {
+						cluster = new GeoCluster(self.define.map, {
+							name: address,
+							type: 'province',
+							nextType: 'locality',
+							id: item.province_id
+						});
+						
+						if(item.province_longitude !== null && item.province_latitude !== null) {
+							item.province_latitude = Number.parseFloat(item.province_latitude);
+							item.province_longitude = Number.parseFloat(item.province_longitude);
+							cluster.setLatLng(item.province_latitude, item.province_longitude);
+						}
+						else geocoderHelper.addRequest(cluster);
+
+						provinceClusters.push(cluster);
+					}
+					else cluster = provinceClusters[provinceClustersIndex];
+
+					if(cluster.itemExist(item.locality_id) === -1) cluster.addItem(item.locality_id);
+
+					cluster.addPost({
+						postId: item.post_id,
+						severity: item.severity
+					});
+				}
+			}
+			else {
+				console.log("Finished province clustering");
+			}
+			addToRegionClusters(data, index);
+		};
+		var addToRegionClusters = function(data, index) {
+			if(index < data.length) {
+				var item = data[index];
+
+				item.post_id = Number.parseInt(item.post_id);
+				item.region_id = Number.parseInt(item.region_id);
+
+				var regionClustersIndex = self._findRegionCluster(item.region_id);
+				var regionClusters = self.define.regionClusters;
+				var address = item.region_long_name + ", Philippines";
+				var cluster;
+
+				if(regionClustersIndex === -1) {
+					var nextType = (item.province_name === "NCR")? 'locality' : 'province';
+					cluster = new GeoCluster(self.define.map, {
+						name: address,
+						type: 'region',
+						nextType: nextType,
+						id: item.region_id
+					});
+					
+					if(item.region_longitude !== null && item.region_latitude !== null) {
+						item.region_latitude = Number.parseFloat(item.region_latitude);
+						item.region_longitude = Number.parseFloat(item.region_longitude);
+						cluster.setLatLng(item.region_latitude, item.region_longitude);
+					}
+					else geocoderHelper.addRequest(cluster);
+
+					regionClusters.push(cluster);
+				}
+				else cluster = regionClusters[regionClustersIndex];
+
+				var itemCluster = (item.province_name === "NCR")? item.locality_id : item.province_id;
+				if(cluster.itemExist(itemCluster) === -1) cluster.addItem(itemCluster);
+
+				cluster.addPost({
+					postId: item.post_id,
+					severity: item.severity
+				});
+
+				addToLocalityClusters(data, index+1);
+			}
+			else {
+				console.log("Finished region clustering");
+				geocoderHelper.addRequest(function() {
+					console.log("geocoding requests finished");
+					var localityClusters = self.define.localityClusters;
+					var localityClustersLength = localityClusters.length;
+					for(var i=0; i<localityClustersLength; i++) {
+						localityClusters[i].prepareMarker();
+						var marker = localityClusters[i].getMarker();
+						google.maps.event.addDomListener(marker, 'click', function(cluster) {
+							console.log("Marker clicked");
+							console.log(cluster);
+						});
+					}
+
+					var provinceClusters = self.define.provinceClusters;
+					var provinceClustersLength = provinceClusters.length;
+					for(var i=0; i<provinceClustersLength; i++) {
+						provinceClusters[i].prepareMarker();
+						var marker = provinceClusters[i].getMarker();
+						google.maps.event.addDomListener(marker, 'click', function(cluster) {
+							console.log("Marker clicked");
+							console.log(cluster);
+						});
+					}
+
+					var regionClusters = self.define.regionClusters;
+					var regionClustersLength = regionClusters.length;
+					for(var i=0; i<regionClustersLength; i++) {
+						regionClusters[i].prepareMarker(true);
+						var marker = regionClusters[i].getMarker();
+						google.maps.event.addDomListener(marker, 'click', function(cluster) {
+							console.log("Marker clicked");
+							console.log(cluster);
+						});
+					}
+				});
+			}
 		};
 
-		var gm = new GeoMarker(map, options);
-		google.maps.event.addDomListener(gm, 'click', function(){
-			console.log("Marker clicked!");
-		});
+		addToLocalityClusters(data, 0);
+	},
 
-		google.maps.event.addDomListener(gm, 'mouseover', function() {
-			console.log("Marker mouse over!");
-		});
+	_findRegionCluster: function(regionId) {
+		var regionClusters = this.define.regionClusters;
+		var regionClustersLength = regionClusters.length;
 
-		google.maps.event.addDomListener(gm, 'mouseout', function() {
-			console.log("Marker mouse out!");
-		});
+		for(var i=0; i<regionClustersLength; i++) {
+			if(regionClusters[i].getId() === regionId) {
+				return i;
+			}
+		}
+
+		return -1;
+	},
+
+	_findProvinceCluster: function(provinceId) {
+		var provinceClusters = this.define.provinceClusters;
+		var provinceClustersLength = provinceClusters.length;
+
+		for(var i=0; i<provinceClustersLength; i++) {
+			if(provinceClusters[i].getId() === provinceId) {
+				return i;
+			}
+		}
+
+		return -1;
+	},
+
+	_findLocalityCluster: function(localityId) {
+		var localityClusters = this.define.localityClusters;
+		var localityClustersLength = localityClusters.length;
+
+		for(var i=0; i<localityClustersLength; i++) {
+			if(localityClusters[i].getId() === localityId) {
+				return i;
+			}
+		}
+
+		return -1;
+	},
+};
+
+function GeocoderHelper(geocoder) {
+	this.define = {
+		url: 'http://localhost/geovetph/server/index.php',
+		geocoder: geocoder,
+		requests: [],
+		processing: false
 	}
 };
 
-// function DataCluster(options) {
-// 	this.define = {
-// 		name: options.name,
-// 		type: options.type,
-// 		id: options.id,
-// 		severity: options.severity || 0,
-// 		subClusters: options.subClusters || [],
-// 		details: options.details || {}
-// 	};
+GeocoderHelper.prototype = {
+	_geocode: function(request, callback) {
+		var self = this;
+		var geocoder = this.define.geocoder;
+		geocoder.geocode({address: request.getAddress()}, function(results, status) {
+			if(status === google.maps.GeocoderStatus.OK) {
+				var longitude = results[0].geometry.location.lng();
+				var latitude = results[0].geometry.location.lat();
+				request.setLatLng(latitude, longitude);
 
-// 	this.define.itemCount = this.define.subClusters.length;
-// 	this.define.clusterIcon = new GeoMarker(this.define.severity, this.define.itemCount);
-// }
+				$.ajax({
+					url: self.define.url,
+					type: 'POST',
+					data: {
+						func: 'update',
+						type: 0,
+						table: request.getType(),
+						id: request.getId(),
+						longitude: longitude,
+						latitude: latitude
+					},
+					success: function(results){
+						console.log(results);
+					}
+				});
+				callback();
+			}
+		});
+	},
 
-// DataCluster.prototype = {
-// 	_restyle: function() {
+	_process: function() {
+		console.log("processing");
+		this.define.processing = true;
+		var self = this;
+		(function next() {
+			if(self.define.requests.length > 0) {
+				setTimeout(function() {
+					if(self.define.requests.length === 2 && $.isFunction(self.define.requests[1]))
+						self._geocode(self.define.requests.shift(), self.define.requests.shift());
+					else self._geocode(self.define.requests.shift(), next);
+				}, 1000);
+			}
+			else {
+				console.log("processing end");
+				self.define.processing = false;
+			}
+		})();
+	},
 
-// 	},
-	
-// 	addItem: function(item, displayFlag) {
-// 		this.define.itemCount++;
-// 		this.define.clusterIcon.updateItemCount(this.define.itemCount);
-// 		if(this.define.severity < item.severity) {
-// 			this.define.severity;
-// 			this.define.clusterIcon.updateSeverity(this.define.severity);
-// 		}
-// 		if(displayFlag) this.define.clusterIcon.show();
-// 	},
-
-// 	removeItem: function() {
-
-// 	}
-
-// 	getName: function() {
-// 		return this.define.name;
-// 	},
-
-// 	getType: function() {
-// 		return this.define.type;
-// 	},
-
-// 	getId: function() {
-// 		return this.define.id;
-// 	},
-
-// 	getSeverity: function() {
-// 		return this.define.severity;
-// 	},
-
-// 	getSubClusters: function() {
-// 		return this.define.subClusters;
-// 	},
-
-// 	getDetails: function() {
-// 		return this.define.details;
-// 	},
-
-// 	setSeverity: function(level) {
-// 		this.define.severity = level;
-// 		this.
-// 	},
-
-// 	setDetails: function(details, mergeFlag) {
-// 		if(mergeFlag) this.define.details.extend(details);
-// 		else this.define.details = details;
-// 	}
-// }
+	addRequest: function(cluster) {
+		console.log("adding request");
+		this.define.requests.push(cluster);
+		if(!this.define.processing) {
+			if($.isFunction(cluster)) {
+				var callback = this.define.requests.shift();
+				callback();
+			}
+			else this._process();
+		}
+	}
+};
 
 /**
 * 	filter format
