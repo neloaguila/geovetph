@@ -37,6 +37,8 @@ function GeoVetPHMap(options) {
 		zoom: options.zoom || 6
 	};
 
+	if(this.define.zoom < this.define.minZoom || this.define.zoom > this.define.maxZoom) this.define.zoom = 6;
+
 	var mapStyle = new google.maps.StyledMapType([
 		{featureType: 'road', stylers: [{visibility: 'off'}]},
 		{featureType: 'poi', stylers: [{visibility: 'off'}]},
@@ -101,20 +103,17 @@ function GeoVetPHMap(options) {
 
 	formatDate();
 
-	var map = new google.maps.Map(options.mapCanvas, mapProperties);
-	var geocoder = new google.maps.Geocoder();
-	var addressManager = new AddressManager(options.addressManager);
-	var dataFilter = new DataFilter(options.dataFilter, this.define.defaultFilter);
-	var dataManager = new DataManager(map, addressManager, this.define.defaultFilter);
+	var map = this.define.map = new google.maps.Map(options.mapCanvas, mapProperties);
+	var geocoder = this.define.geocoder = new google.maps.Geocoder();
+	var addressManager = this.define.addressManager = new AddressManager(options.addressManager);
+	var dataFilter = this.define.dataFilter = new DataFilter(options.dataFilter, this.define.defaultFilter);
+	var dataManager = this.define.dataManager = new DataManager(map, addressManager, this.define.defaultFilter);
+	var zoomControl = this.define.zoomControl = options.zoomControl;
 
 	map.mapTypes.set(mapStyleId, mapStyle);
 	map.setMapTypeId(mapStyleId);
 
-	this.define.map = map;
-	this.define.geocoder = geocoder;
-	this.define.addressManager = addressManager;
-	this.define.dataFilter = dataFilter;
-	this.define.dataManager = dataManager;
+	this._updateZoomControl();
 
 	dataFilter.getElement().addEventListener('filter_submit', function(e) {
 		self._processFilterData(e.detail.filterValue);
@@ -122,6 +121,27 @@ function GeoVetPHMap(options) {
 
 	addressManager.getElement().addEventListener('location_selected', function(e) {
 		self._processLocationData(e.detail);
+	});
+
+	var zoomControl = this.define.zoomControl;
+	var zoomIn = $(zoomControl).find('#zoom-in');
+	var zoomOut = $(zoomControl).find('#zoom-out');
+
+	$(zoomIn).on('click', function() {
+		if(!$(this).hasClass('disabled')) {
+			self.define.map.setZoom(self.define.map.getZoom()+1);
+		}
+	});
+
+	$(zoomOut).on('click', function() {
+		if(!$(this).hasClass('disabled')) {
+			self.define.map.setZoom(self.define.map.getZoom()-1);
+		}
+	});
+
+	google.maps.event.addDomListener(map, 'zoom_changed', function() {
+		self._updateZoomControl();
+		self.define.dataManager.displayMarkers();
 	});
 }
 
@@ -149,9 +169,7 @@ GeoVetPHMap.prototype = {
 				}
 			}
 			newFilter.date = date;
-			if(severity.length !== 0) {
-				newFilter.severity = severity;
-			}
+			newFilter.severity = severity;
 
 			if(location.name != "") {
 				var address = location.full_address;
@@ -212,13 +230,33 @@ GeoVetPHMap.prototype = {
 	
 		switch(location.type) {
 			case "province":
+				locationFilter.province = location.province;
 				locationFilter.provinceId = location.provinceId;
 			case "region":
+				locationFilter.region = location.region;
 				locationFilter.regionId = location.regionId;
 				break;
 		}
 
 		this.define.dataManager.setLocation(locationFilter);
+	},
+
+	_updateZoomControl: function() {
+		var zoomControl = this.define.zoomControl;
+		var zoomIn = $(zoomControl).find('#zoom-in');
+		var zoomOut = $(zoomControl).find('#zoom-out');
+
+		var currZoom = this.define.map.getZoom();
+		if(currZoom < this.define.minZoom) this.define.map.setZoom(this.define.minZoom);
+		if(currZoom > this.define.maxZoom) this.define.map.setZoom(this.define.maxZoom);
+
+		this.define.zoom = this.define.map.getZoom();
+
+		if(this.define.zoom === this.define.minZoom) $(zoomOut).addClass('disabled');
+		else if($(zoomOut).hasClass('disabled')) $(zoomOut).removeClass('disabled');
+
+		if(this.define.zoom === this.define.maxZoom) $(zoomIn).addClass('disabled');
+		else if($(zoomIn).hasClass('disabled')) $(zoomIn).removeClass('disabled');
 	},
 
 	getMap: function() {

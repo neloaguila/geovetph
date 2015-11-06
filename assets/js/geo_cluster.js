@@ -2,12 +2,15 @@ function GeoCluster(map, options) {
 	this.define = {
 		map: map,
 		name: options.name,
+		address: options.address,
 		type: options.type,
 		id: options.id,
 		longitude: options.longitude || 0,
 		latitude: options.latitude || 0,
 		count: options.count || 0,
 		severityCount: options.severityCount || [0,0,0],
+		previousType: options.previousType,
+		nextType: options.nextType,
 		innerData: [],
 		postData: []
 	};
@@ -20,9 +23,10 @@ GeoCluster.prototype = {
 		var severityCountLength = severityCount.length;
 
 		for(var i=0; i<severityCountLength; i++) {
-			if(severityCount[i] >= severityCount[severityLevel]) {
-				severityLevel = i;
-			}
+			// if(severityCount[i] >= severityCount[severityLevel]) {
+			// 	severityLevel = i;
+			// }
+			if(severityCount[i] !== 0) severityLevel = i;
 		}
 
 		this.define.severity = severityLevel;
@@ -87,6 +91,30 @@ GeoCluster.prototype = {
 
 	getType: function() {
 		return this.define.type;
+	},
+
+	getNextType: function() {
+		return this.define.nextType;
+	},
+
+	getPreviousType: function() {
+		return this.define.previousType;
+	},
+
+	getLatLng: function() {
+		return new google.maps.LatLng(this.define.latitude, this.define.longitude);
+	},
+
+	getProvince: function() {
+		return {name: this.define.address.province, id: this.define.address.provinceId};
+	},
+
+	getRegion: function() {
+		return {name: this.define.address.region, id: this.define.address.regionId};
+	},
+
+	getCount: function() {
+		return this.define.count;
 	},
 
 	setLatLng: function(latitude, longitude) {

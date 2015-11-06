@@ -29,7 +29,7 @@ $grey900: #212121;
 @import "../../plugins/materialize/sass/components/roboto.scss";
 @import "../../plugins/materialize/sass/components/typography.scss";
 @import "../../plugins/materialize/sass/components/cards.scss";
-// @import "../../plugins/materialize/sass/components/toast.scss";
+@import "../../plugins/materialize/sass/components/toast.scss";
 @import "../../plugins/materialize/sass/components/tabs.scss";
 @import "../../plugins/materialize/sass/components/tooltip.scss";
 @import "../../plugins/materialize/sass/components/buttons.scss";
@@ -136,4 +136,10 @@ body {
 	width: 100%;
 	height: 100%;
 	overflow: hidden;
+}
+
+.customize-toast {
+	font-size: 12px;
+	padding: 0;
+	height: auto;
 }

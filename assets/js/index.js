@@ -5,7 +5,7 @@ function initApp() {
 		mapCanvas: document.getElementById('map-canvas'),
 		addressManager: document.getElementById('address-manager'),
 		dataFilter: document.getElementById('data-filter'),
-		zoomControl: document.getElementById('zooom-control')
+		zoomControl: document.getElementById('zoom-control')
 	});
 };
 

@@ -71,15 +71,15 @@
 			$locationCondition = $this->formatLocationCondition($filter->location);
 
 			$stmt  = "SELECT ";
-			$stmt .= "post_id, user_id, date_posted, message, locality_id, locality_name, locality_type, locality_longitude, locality_latitude, province_id, province_name, province_longitude, province_latitude, region.region_id, region.name AS region_name, region.long_name AS region_long_name, longitude AS region_longitude, latitude AS region_latitude, common_name, animal_group, disease_name, strain ";
+			$stmt .= "post_id, user_id, date_posted, severity, message, locality_id, locality_name, locality_type, locality_longitude, locality_latitude, province_id, province_name, province_longitude, province_latitude, region.region_id, region.name AS region_name, region.long_name AS region_long_name, longitude AS region_longitude, latitude AS region_latitude, common_name, animal_group, disease_name, strain ";
 			$stmt .= "FROM ";
 			$stmt .= "(";
 			$stmt .= "SELECT ";
-			$stmt .= "post_id, user_id, date_posted, message, locality_id, locality_name, locality_type, locality_longitude, locality_latitude, province.province_id, province.name AS province_name, longitude AS province_longitude, latitude AS province_latitude, region_id, common_name, animal_group, disease_name, strain ";
+			$stmt .= "post_id, user_id, date_posted, severity, message, locality_id, locality_name, locality_type, locality_longitude, locality_latitude, province.province_id, province.name AS province_name, longitude AS province_longitude, latitude AS province_latitude, region_id, common_name, animal_group, disease_name, strain ";
     		$stmt .= "FROM ";
 			$stmt .= "(";
 			$stmt .= "SELECT ";
-			$stmt .= "post_id, user_id, date_posted, message, locality.locality_id, locality.name AS locality_name, locality_type, longitude AS locality_longitude, latitude AS locality_latitude, province_id, common_name, animal_group, disease_name, strain ";
+			$stmt .= "post_id, user_id, date_posted, severity, message, locality.locality_id, locality.name AS locality_name, locality_type, longitude AS locality_longitude, latitude AS locality_latitude, province_id, common_name, animal_group, disease_name, strain ";
 			$stmt .= "FROM ";
 			$stmt .= "(";
 			$stmt .= "SELECT ";
@@ -149,6 +149,7 @@
 					break;
 				case 0:
 					return false;
+					break;
 				default:
 					return "(severity IN (" . join(",", $data) . "))";
 					break;

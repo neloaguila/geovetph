@@ -2,7 +2,7 @@ function GeoMarker(map, cluster, options) {
 	this.define = {
 		map: map,
 		cluster: cluster,
-		div: null,
+		div: document.createElement('div'),
 		latitude: options.latitude,
 		longitude: options.longitude,
 		count: options.count || 0,
@@ -20,17 +20,17 @@ function GeoMarker(map, cluster, options) {
 			background: 'rgba(255,255,255,0)'
 		}
 	};
+
+	this.define.div.classname = 'marker';
+	this._prepareStyle();
 	this.setMap(map);
 }
 
 GeoMarker.prototype = new google.maps.OverlayView();
 
 GeoMarker.prototype.onAdd = function() {
-	var div = this.define.div = document.createElement('div');
-	div.classname = 'marker';
-	this._prepareStyle();
 	var panes = this.getPanes();
-	panes.overlayImage.appendChild(div);
+	panes.overlayImage.appendChild(this.define.div);
 	this._initializeElement();
 };
 

@@ -329,9 +329,23 @@ AddressManager.prototype = {
 
 	setLocation: function(location) {
 		this._clearList(0);
-		this._setRegion(location.region.name, Number.parseInt(location.region.region_id), false);
-		if(location.region.name !== "NCR") {
-			this._setProvince(location.province.name, Number.parseInt(location.province.province_id), false);
+		if(location.region) {
+			this._setRegion(location.region.name, Number.parseInt(location.region.region_id), false);
+			if(location.region.name !== "NCR") {
+				if(location.province) {
+					this._setProvince(location.province.name, Number.parseInt(location.province.province_id), false);
+				}
+			}
+		}
+		else {
+			this.define.regionSelected = false;
+			this.define.region = null;
+			this.define.regionId = -1;
+			this.define.regionListOpen = false;
+			this.define.provinceSelected = false;
+			this.define.province = null;
+			this.define.provinceId = -1;
+			this.define.provinceListOpen = false;
 		}
 	},
 
