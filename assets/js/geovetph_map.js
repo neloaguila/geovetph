@@ -27,14 +27,15 @@ function GeoVetPHMap(options) {
 				{name: "Outbreak", color: 'rgba(173,20,87,1)', selected: true}
 			],
 			date: {
-				selected: "Past week",
+				selected: "Past 2 weeks",
 				from: "",
 				to: ""
 			}
 		},
 		minZoom: options.minZoom || 5,
 		maxZoom: options.maxZoom || 11,
-		zoom: options.zoom || 6
+		zoom: options.zoom || 6,
+		loader: options.loader
 	};
 
 	if(this.define.zoom < this.define.minZoom || this.define.zoom > this.define.maxZoom) this.define.zoom = 6;
@@ -141,7 +142,6 @@ function GeoVetPHMap(options) {
 
 	google.maps.event.addDomListener(map, 'zoom_changed', function() {
 		self._updateZoomControl();
-		self.define.dataManager.displayMarkers();
 	});
 }
 
@@ -207,7 +207,6 @@ GeoVetPHMap.prototype = {
 					},
 					success: function(results) {
 						var data = JSON.parse(results);
-						console.log(results);
 						if(data !== -1) {
 							newFilter.location.regionId = Number.parseInt(data.region.region_id);
 							newFilter.location.provinceId = Number.parseInt(data.province.province_id);

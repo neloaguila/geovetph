@@ -117,12 +117,12 @@ GeoMarker.prototype._initializeElement = function() {
 	google.maps.event.addDomListener(this.define.div, 'mouseover', function() {
 		var backgroundValue = self.define.styleValues.background;
 		$(self.define.div).css('background', backgroundValue.substring(0, backgroundValue.lastIndexOf(",")) + ",1)");
-		google.maps.event.trigger(self, 'mouseover');
+		google.maps.event.trigger(self, 'mouseover', self.define.cluster);
 	});
 
 	google.maps.event.addDomListener(this.define.div, 'mouseout', function() {
 		$(self.define.div).css('background', self.define.styleValues.background);
-		google.maps.event.trigger(self, 'mouseout');
+		google.maps.event.trigger(self, 'mouseout', self.define.cluster);
 	});
 };
 

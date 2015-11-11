@@ -8304,4 +8304,71 @@ body {
       padding: 0;
       margin-right: 20px; }
 
+#infobox {
+  position: absolute;
+  right: 20px;
+  bottom: 150px;
+  margin: 0;
+  min-width: 205px;
+  font-size: 12px;
+  display: none;
+  opacity: 0; }
+  #infobox .card-title {
+    background: #323232;
+    padding: 5px 10px; }
+    #infobox .card-title .address-main {
+      font-size: 14px; }
+    #infobox .card-title .address-more {
+      font-size: 10px; }
+  #infobox .card-content {
+    padding: 0;
+    position: relative; }
+    #infobox .card-content .total-count {
+      width: 60%;
+      min-width: 125px;
+      height: 100%;
+      position: absolute;
+      left: 0;
+      border-right: 1px solid rgba(0, 0, 0, 0.1); }
+      #infobox .card-content .total-count .count {
+        height: calc(100% - 30px);
+        font-size: 35px; }
+        #infobox .card-content .total-count .count div {
+          width: 100%;
+          text-align: center;
+          padding-top: 10px; }
+      #infobox .card-content .total-count .text {
+        height: 30px;
+        text-align: center;
+        font-size: 10px; }
+    #infobox .card-content .severity-count {
+      width: 40%;
+      min-width: 80px;
+      float: right; }
+      #infobox .card-content .severity-count .level {
+        height: 30px; }
+        #infobox .card-content .severity-count .level .count {
+          font-size: 14px;
+          display: inline-block;
+          width: 25px;
+          height: 100%;
+          line-height: 30px;
+          text-align: center; }
+        #infobox .card-content .severity-count .level .text {
+          display: inline;
+          height: 100%;
+          font-size: 10px; }
+    #infobox .card-content::after {
+      content: '';
+      width: 100%;
+      display: block;
+      visibility: hidden;
+      clear: both; }
+  #infobox .card-action {
+    padding: 0; }
+    #infobox .card-action a.btn-flat {
+      margin: 0;
+      width: 100%;
+      text-align: center; }
+
 /*# sourceMappingURL=main.css.map */

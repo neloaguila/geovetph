@@ -64,6 +64,10 @@ GeoCluster.prototype = {
 		this.define.geomarker.hide();
 	},
 
+	removeGeomarker: function() {
+		this.define.geomarker.setMap(null);
+	},
+
 	prepareMarker: function(visibility) {
 		var options = {
 			latitude: this.define.latitude,
@@ -105,6 +109,10 @@ GeoCluster.prototype = {
 		return new google.maps.LatLng(this.define.latitude, this.define.longitude);
 	},
 
+	getLocality: function() {
+		return {name: this.define.address.locality, id: this.define.address.localityId};
+	},
+
 	getProvince: function() {
 		return {name: this.define.address.province, id: this.define.address.provinceId};
 	},
@@ -117,12 +125,16 @@ GeoCluster.prototype = {
 		return this.define.count;
 	},
 
+	getSeverity: function() {
+		return this.define.severityCount;
+	},
+
 	setLatLng: function(latitude, longitude) {
 		this.define.latitude = latitude;
 		this.define.longitude = longitude;
 	},
 
 	isVisible: function() {
-		return this.define.geomarker.isVisible();
+		return (this.define.geomarker)? this.define.geomarker.isVisible() : false;
 	}
 };

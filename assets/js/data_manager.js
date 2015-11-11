@@ -7,12 +7,14 @@ function DataManager(map, addressManager, defaultFilter) {
 		localityClusters: [],
 		provinceClusters: [],
 		regionClusters: [],
+		countryCluster: null,
 		minRegionZoom: 6,
 		minProvinceZoom: 9,
 		minLocalityZoom: 10,
 		previousType: -1,
 		currentType: -1,
-		nextType: -1
+		nextType: -1,
+		infoboxDisplayable: true
 	};
 
 	var defaultDate = {};
@@ -35,13 +37,23 @@ function DataManager(map, addressManager, defaultFilter) {
 	}
 	if(defaultSeverity.length === severityLength) defaultSeverity = [];
 	filter.severity = defaultSeverity;
+	this.define.severityGuide = severity;
+
+	this.define.infobox = $('#infobox');
+
 	this.define.currentFilter = filter;
-	// google.maps.event.addListenerOnce(map, 'tilesloaded', function() {
-		self._fetchData(self.define.currentFilter, function(results) {
-			self.define.data = results;
-			self._clusterData(self.define.data);
-		});
-	// });
+	this._fetchData(self.define.currentFilter, function(results) {
+		self.define.data = results;
+		self._clusterData(self.define.data);
+	});
+
+	google.maps.event.addDomListener(map, 'zoom_changed', function() {
+		self._displayMarkers();
+	});
+
+	google.maps.event.addDomListener(map, 'tilesloaded', function() {
+		self.define.infoboxDisplayable = true;
+	});
 }
 
 DataManager.prototype = {
@@ -85,6 +97,14 @@ DataManager.prototype = {
 					var previousType = (item.province_name === "NCR")? 1 : 2;
 					cluster = new GeoCluster(self.define.map, {
 						name: address,
+						address: {
+							locality: item.locality_name,
+							localityId: item.locality_id,
+							province: item.province_name,
+							provinceId: item.province_id,
+							region: item.region_name,
+							regionId: item.region_id
+						},
 						type: 3,
 						id: item.locality_id,
 						previousType: previousType ,
@@ -235,11 +255,9 @@ DataManager.prototype = {
 						google.maps.event.addDomListener(marker, 'click', function(cluster) {
 							console.log(cluster);
 							self.define.map.setCenter(cluster.getLatLng());
-							self._displayToast(1, {
-								currentAddress: cluster.getAddress(),
-								currentCount: cluster.getCount()
-							}, 3000);
 						});
+
+						self._attachInfobox(marker);
 					}
 
 					var provinceClusters = self.define.provinceClusters;
@@ -248,6 +266,9 @@ DataManager.prototype = {
 						provinceClusters[i].prepareMarker();
 						var marker = provinceClusters[i].getMarker();
 						google.maps.event.addDomListener(marker, 'click', function(cluster) {
+							self._hideInfoboxImmediately();
+							self.define.infoboxDisplayable = false;
+
 							self.define.map.setCenter(cluster.getLatLng());
 							self.define.previousType = cluster.getPreviousType();
 							self.define.currentType = cluster.getType();
@@ -280,6 +301,8 @@ DataManager.prototype = {
 								});
 							}
 						});
+
+						self._attachInfobox(marker);
 					}
 
 					var regionClusters = self.define.regionClusters;
@@ -288,6 +311,9 @@ DataManager.prototype = {
 						regionClusters[i].prepareMarker();
 						var marker = regionClusters[i].getMarker();
 						google.maps.event.addDomListener(marker, 'click', function(cluster) {
+							self._hideInfoboxImmediately();
+							self.define.infoboxDisplayable = false;
+
 							self.define.map.setCenter(cluster.getLatLng());
 							self.define.previousType = cluster.getPreviousType();
 							self.define.currentType = cluster.getType();
@@ -314,17 +340,20 @@ DataManager.prototype = {
 								}
 							});
 						});
+
+						self._attachInfobox(marker);
 					}
 
 					var countryCluster = self.define.countryCluster;
 					countryCluster.prepareMarker();
 					var marker = countryCluster.getMarker();
 					google.maps.event.addDomListener(marker, 'click', function(cluster) {
+						self._hideInfoboxImmediately();
+
 						self.define.map.setCenter(cluster.getLatLng());
 						self.define.previousType = cluster.getPreviousType();
 						self.define.currentType = cluster.getType();
 						self.define.nextType = cluster.getNextType();
-						// self._toggleMarkersOfType("region");
 						self.define.map.setZoom(self.define.minRegionZoom);
 
 						self._displayToast(1, {
@@ -333,10 +362,22 @@ DataManager.prototype = {
 						}, 3000);
 					});
 
+					self._attachInfobox(marker);
+
 					self._displayMarkers();
+					self._displayToast(1, {
+						currentAddress: countryCluster.getAddress(),
+						currentCount: countryCluster.getCount()
+					}, 3000);
 				});
 			}
 		};
+
+		this._clearMarkers(null, true);
+
+		this.define.localityClusters = [];
+		this.define.provinceClusters = [];
+		this.define.regionClusters = [];
 
 		var countryCluster = this.define.countryCluster = new GeoCluster(this.define.map, {
 			name: 'Philippines',
@@ -347,7 +388,48 @@ DataManager.prototype = {
 		});
 
 		geocoderHelper.addRequest(countryCluster);
+
 		addToLocalityClusters(data, 0);
+	},
+
+	_attachInfobox: function(marker) {
+		var self = this;
+		google.maps.event.addDomListener(marker, 'mouseover', function(cluster) {
+			if(self.define.infoboxTimeout) clearTimeout(self.define.infoboxTimeout);
+			var addressMain;
+			var addressMore;
+			switch(cluster.getType()) {
+				case 0:
+					addressMain = "Philippines";
+					addressMore = null;
+					break;
+				case 1:
+					addressMain = cluster.getRegion().name;
+					addressMore = "Philippines";
+					break;
+				case 2:
+					addressMain = cluster.getProvince().name;
+					addressMore = cluster.getRegion().name + ", Philippines";
+					break;
+				case 3:
+					addressMain = cluster.getLocality().name;
+					addressMore = (cluster.getProvince().name === "NCR")? "" : cluster.getProvince().name + ", ";
+					addressMore += cluster.getRegion().name + ", Philippines";
+					break;
+			}
+			var details = {
+				addressMain: addressMain,
+				count: cluster.getCount(),
+				severity: cluster.getSeverity(),
+				position: cluster.getLatLng()
+			};
+			if(addressMore) details.addressMore = addressMore;
+			if(self.define.infoboxDisplayable) self._displayInfobox(details);
+		});
+
+		google.maps.event.addDomListener(marker, 'mouseout', function() {
+			self._hideInfobox();
+		});
 	},
 
 	_findClusterIndex: function(type, id) {
@@ -371,20 +453,21 @@ DataManager.prototype = {
 		return -1;
 	},
 
-	_clearMarkers: function(type) {
+	_clearMarkers: function(type, deepClear) {
 		var countryCluster = this.define.countryCluster;
 		var regionClusters = this.define.regionClusters;
 		var provinceClusters = this.define.provinceClusters;
 		var localityClusters = this.define.localityClusters;
 
 		var clusters = [];
-		if(type !== 0) clusters = clusters.concat(countryCluster);
+		if(type !== 0) clusters = (countryCluster)? clusters.concat(countryCluster) : [];
 		if(type !== 1) clusters = clusters.concat(regionClusters);
 		if(type !== 2) clusters = clusters.concat(provinceClusters);
 		if(type !== 3) clusters = clusters.concat(localityClusters);
 		var clusterLength = clusters.length;
 
 		for(var i=0; i<clusterLength; i++) if(clusters[i].isVisible()) clusters[i].hideGeomarker();
+		if(deepClear) for(var i=0; i<clusterLength; i++) clusters[i].removeGeomarker();
 	},
 
 	_toggleSubMarkers: function(type, nextType, id) {
@@ -515,14 +598,14 @@ DataManager.prototype = {
 					lineHeight: '15px'
 				});
 				action.css({
-					padding: '20px 15px',
+					padding: '10px 15px',
 					fontWeight: 'bolder',
 					color: 'rgba(0,0,0,0.87)'
 				});
 				actionCount.css({
-					padding: '0 10px 10px 10px',
-					fontSize: '50px',
-					lineHeight: '50px'
+					padding: '0 10px 5px 10px',
+					fontSize: '30px',
+					lineHeight: '30px'
 				});
 
 				var contentMessage = "There were no alerts posted for " + details.intendedAddress + ". Displaying alerts from " + details.currentAddress + ".";
@@ -553,14 +636,14 @@ DataManager.prototype = {
 					lineHeight: '15px'
 				});
 				action.css({
-					padding: '20px 15px',
+					padding: '10px 15px',
 					fontWeight: 'bolder',
 					color: 'rgba(0,0,0,0.87)'
 				});
 				actionCount.css({
-					padding: '0 10px 10px 10px',
-					fontSize: '50px',
-					lineHeight: '50px'
+					padding: '0 10px 5px 10px',
+					fontSize: '30px',
+					lineHeight: '30px'
 				});
 
 				var contentMessage = "Displaying alerts from " + details.currentAddress + ".";
@@ -578,18 +661,71 @@ DataManager.prototype = {
 		Materialize.toast(toast, durationSet, 'customize-toast');
 	},
 
-	displayMarkers: function() {
-		this._displayMarkers();
+	_displayInfobox: function(details) {
+		var self = this;
+		var $infobox = this.define.infobox;
+		var addressMain = $infobox.find('.address-main');
+		var addressMore = $infobox.find('.address-more');
+		var totalCount = $infobox.find('.total-count .count div');
+		var severityCount = $infobox.find('.severity-count');
+
+		$(addressMain).html(details.addressMain);
+		$(addressMore).html("");
+		if(details.addressMore) $(addressMore).html(details.addressMore);
+		$(totalCount).html(details.count);
+		$(severityCount).html("");
+
+		var severityLength = details.severity.length;
+		for(var i=0; i<severityLength; i++) {
+			var $count = $('<div></div>', {class: 'level'});
+			var $countCount = $('<div></div>', {class: 'count'});
+			var $countText = $('<div></div>', {class: 'text'});
+			$countCount.html(details.severity[i]);
+			$countText.html(this.define.severityGuide[i].name);
+			$count.append($countCount);
+			$count.append($countText);
+			$count.css({color: this.define.severityGuide[i].color});
+			$(severityCount).append($count);
+		}
+
+		this.define.infoboxVisible = true;
+		$infobox.stop().show().css('opacity', 1);
+
+		$infobox.on('mouseenter', function(e) {
+			if(self.define.infoboxVisible) clearTimeout(self.define.infoboxTimeout);
+			$(this).stop().css('opacity', 1);
+		});
+
+		$infobox.on('mouseleave', function() {
+			self._hideInfobox();
+		});
+	},
+
+	_hideInfobox: function() {
+		var self = this;
+		this.define.infoboxTimeout = setTimeout(function() {
+			self.define.infobox.animate({opacity: 0}, {
+				duration: 1000,
+				complete: function() {
+					self.define.infoboxVisible = false;
+					self.define.infobox.hide();
+				}
+			});
+		}, 2000);
+	},
+
+	_hideInfoboxImmediately: function() {
+		this.define.infoboxVisible = false;
+		this.define.infobox.css('opacity', 1).hide();
 	},
 
 	setFilter: function(filterValues) {
 		var self = this;
-		console.log(filterValues);
 		this._fetchData(filterValues, function(results) {
 			self.define.previousFilter = JSON.parse(JSON.stringify(self.define.currentFilter));
 			self.define.currentFilter = filterValues;
-			console.log(results);
-			console.log("DataManager.setFilter: Data fetched");
+			self.define.data = results;
+			self._clusterData(self.define.data);
 		});
 	},
 
@@ -758,14 +894,14 @@ GeocoderHelper.prototype = {
 		(function next() {
 			if(self.define.requests.length > 0) {
 				setTimeout(function() {
-					if(self.define.requests.length === 2 && $.isFunction(self.define.requests[1]))
+					if(self.define.requests.length === 2 && $.isFunction(self.define.requests[1])) {
 						self._geocode(self.define.requests.shift(), self.define.requests.shift());
+						self.define.processing = false;
+					}
 					else self._geocode(self.define.requests.shift(), next);
 				}, 1000);
 			}
-			else {
-				self.define.processing = false;
-			}
+			else self.define.processing = false;
 		})();
 	},
 

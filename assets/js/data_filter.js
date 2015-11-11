@@ -236,7 +236,6 @@ DataFilter.prototype = {
 				self._toggleButton($(groupElem), 'unselect');
 				self.define.animal.selectedGroupCount--;
 				var group = $(groupElem).data('group');
-				var self = self;
 
 				$(groupElem).data('speciesSelected', 0);
 

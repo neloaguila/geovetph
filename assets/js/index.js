@@ -1,11 +1,14 @@
 var geovetphmap;
 
 function initApp() {
+    loader = new Loader(document.getElementById('main'), {});
 	geovetphmap = new GeoVetPHMap({
 		mapCanvas: document.getElementById('map-canvas'),
 		addressManager: document.getElementById('address-manager'),
 		dataFilter: document.getElementById('data-filter'),
-		zoomControl: document.getElementById('zoom-control')
+		zoomControl: document.getElementById('zoom-control'),
+        loader: loader,
+        diseaseInfo: document.getElementById('disease-info')
 	});
 };
 
