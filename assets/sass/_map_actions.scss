@@ -6,10 +6,12 @@
 
 #login-button {
 	@extend %mapButtons;
+	background: $primary-color;
 }
 
 #signup-button {
 	@extend %mapButtons;
+	background: $primary-color;
 }
 
 #graph-button {
@@ -17,6 +19,7 @@
 	@include color-text("light", "icon");
 	width: 25px;
 	padding: 0;
+	background: color('grey', 'lighten-5');
 }
 
 #legend-button {
@@ -25,4 +28,5 @@
 	width: 25px;
 	padding: 0;
 	margin-right: 20px;
+	background: color('grey', 'lighten-5');
 }

@@ -48,9 +48,9 @@ function DataFilter(element, defaultFilter) {
 	}
 
 	var defaults = ["Today", "Past 2 days", "Past 3 days", "Past 4 days", "Past 5 days", "Past 6 days", "Past week", "Past 2 weeks", "Past month"];
-	if(defaults.includes(defaultFilter.date.selected))
-		this.define.date.defaultValue = defaultFilter.date.selected;
-	else this.define.date.defaultValue = "Past week";
+	for(var i=0; i<defaults.length; i++)
+		if(defaults[i] === defaultFilter.date.selected) this.define.date.defaultValue = defaultFilter.date.selected;
+	if(!this.define.date.defaultValue) this.define.date.defaultValue = "Past week";
 
 	this._initializeComponents();
 	this._initializeEvents();

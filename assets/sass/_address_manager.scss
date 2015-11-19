@@ -12,6 +12,7 @@
 		margin-top: 10px;
 		margin-bottom: 0;
 		@include color-text("light", "text");
+		background: color('grey', 'lighten-5');
 	}
 
 	%list {

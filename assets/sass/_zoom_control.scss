@@ -12,6 +12,7 @@
 		padding: 0;
 		text-align: center;
 		@include color-text("light", "icon");
+		background: color('grey', 'lighten-5');
 
 		i.material-icons {
 			line-height: 25px;

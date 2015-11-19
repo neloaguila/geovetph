@@ -1,0 +1,296 @@
+#disease-info {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	z-index: 500;
+	right: -100%;
+	@include transition(right 0.3s ease-out);
+
+	#info-wrapper {
+		height: 90%;
+		width: 80%;
+		margin: 0 auto;
+		position: relative;
+		padding: 0;
+
+		#info-main {
+			height: 100%;
+			width: calc(100% - 34px);
+			display: inline-block;
+			vertical-align: top;
+
+			#info-list {
+				width: 50%;
+				height: 100%;
+				display: inline-block;
+				vertical-align: top;
+				font-size: 0.7em;
+
+				#location-info {
+					width: 100%;
+					height: 65px;
+					text-align: center;
+					padding: 10px;
+					padding-top: 15px;
+					background: #323232;
+					@include color-text('dark', 'text');
+					border-top-left-radius: 2px;
+
+					#address-main {
+						font-size: 16px;
+					}
+
+					#address-more {
+						font-size: 11px;
+					}
+				}
+
+				#disease-list {
+					width: 100%;
+					height: calc(100% - 90px);
+					overflow-y: scroll;
+					background: color('grey', 'lighten-5');
+					cursor: pointer;
+					position: relative;
+
+					& > ul {
+						width: 100%;
+						padding: 5px;
+
+						li.list-divider {
+							line-height: 20px;
+							text-align: center;
+						}
+
+						li.list-divider.list-location {
+							width: 100%;
+							border-left: 4px solid rgba(0,0,0,0.7);
+							margin-bottom: 5px;
+
+							.list-divider-text {
+								background: color('grey', 'lighten-3');
+								@include color-text('light', 'text');
+							}
+
+							.list-divider-inner {
+								width: 100%;
+								padding-left: 5px;
+								padding-top: 5px;
+							}
+						}
+
+						li.list-divider.list-date {
+							background: color('grey', 'darken-2');
+							@include color-text('dark', 'text');
+						}
+
+						li:not(.list-divider) {
+							width: 100%;
+							height: 30px;
+							line-height: 30px;
+							margin-top: 2px;
+							margin-bottom: 2px;
+							@include transition(background-color 0.2s ease-out);
+							background: color('grey', 'lighten-1');
+							text-align: left;
+
+							&:not(.selected):hover {
+								background-color: $primary-color;
+								@include color-text('dark', 'text');
+							}
+
+							&.selected {
+								height: 45px;
+								line-height: 45px;
+								background-color: $primary-color-dark;
+								@include color-text('dark', 'text');
+							}
+
+							.severity-level {
+								width: 8%;
+								height: 100%;
+								display: inline-block;
+								position: relative;
+
+								.severity-icon {
+									width: 12px;
+									height: 12px;
+									border-radius: 50%;
+									position: absolute;
+									top: calc((100% - 12px) / 2);
+									right: 5px;
+								}
+							}
+
+							.disease-name {
+								width: 65%;
+								height: 100%;
+								display: inline-block;
+								vertical-align: top;
+								padding-left: 10px;
+							}
+
+							.animal-name {
+								width: 23%;
+								height: 100%;
+								display: inline-block;
+								vertical-align: top;
+								padding-left: 10px;
+							}
+						}
+					}
+				}
+
+				#count {
+					height: 25px;
+					background: #323232;
+					color: #eee;
+					text-align: center;
+					font-weight: lighter;
+					line-height: 25px;
+					border-bottom-left-radius: 2px;
+				}
+			}
+
+			#info-disease {
+				width: 49%;
+				height: 100%;
+				display: inline-block;
+				vertical-align: top;
+				padding: 10px;
+				font-size: 11px;
+				position: relative;
+
+				#severity {
+					width: 45%;
+					height: 30px;
+					display: inline-block;
+					position: relative;
+
+					.severity-level {
+						width: 70%;
+						height: 80%;
+						// background: rgba(255,152,0,1);
+						color: #fff;
+						font-size: 12px;
+						text-align: center;
+						line-height: 24px;
+						border-radius: 2px;
+						text-transform: uppercase;
+						text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+						position: absolute;
+						top: 10%;
+					}
+				}
+
+				#date {
+					width: 54%;
+					height: 30px;
+					display: inline-block;
+					vertical-align: top;
+
+					.date {
+						line-height: 30px;
+						font-size: 14px;
+						text-align: right;
+					}
+				}
+
+				#info-more {
+					width: 100%;
+					height: calc(100% - 30px);
+					overflow: auto;
+
+					%info-parts {
+						width: 100%;
+						font-size: 10px;
+						padding: 5px 10px;
+						border-bottom: 1px solid #eee;
+					}
+
+					%info-parts-inner1 {
+						font-size: 14px;
+						text-align: right;
+					}
+
+					%info-parts-inner2 {
+						font-size: 11px;
+						text-align: right;
+					}
+
+					#location {
+						@extend %info-parts;
+						padding-top: 20px;
+
+						.location-main {
+							@extend %info-parts-inner1;
+						}
+
+						.location-more {
+							@extend %info-parts-inner2;
+						}
+					}
+
+					#disease {
+						@extend %info-parts;
+
+						.disease-name {
+							@extend %info-parts-inner1;
+						}
+
+						.strain {
+							@extend %info-parts-inner2;
+						}
+					}
+
+					#animal {
+						@extend %info-parts;
+
+						.animal-group {
+							@extend %info-parts-inner1;
+						}
+
+						.animal-name {
+							@extend %info-parts-inner2;
+						}
+					}
+
+					#message {
+						width: 100%;
+						padding: 15px 10px;
+						text-align: justify;
+						font-size: 14px;
+					}
+				}
+			}
+		}
+
+		#info-close {
+			height: 100%;
+			width: 30px;
+			display: inline-block;
+			vertical-align: top;
+			background: color('grey', 'lighten-5');
+			border-top-right-radius: 2px;
+			border-bottom-right-radius: 2px;
+
+			#close-icon {
+				width: 100%;
+				height: 30px;
+				cursor: pointer;
+
+				&:hover {
+					background: color('grey', 'lighten-3');
+
+					& > div {
+						color: rgba(0,0,0,1);
+					}
+				}
+
+				& > div {
+					margin: 0 auto;
+				}
+			}
+		}
+	}
+}

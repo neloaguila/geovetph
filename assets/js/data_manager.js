@@ -1,8 +1,9 @@
-function DataManager(map, addressManager, defaultFilter) {
+function DataManager(map, addressManager, defaultFilter, diseaseInfo) {
 	this.define = {
 		url: 'http://localhost/geovetph/server/index.php',
 		map: map,
 		addressManager: addressManager,
+		diseaseInfo: diseaseInfo,
 		previousFilter: null,
 		localityClusters: [],
 		provinceClusters: [],
@@ -38,13 +39,14 @@ function DataManager(map, addressManager, defaultFilter) {
 	if(defaultSeverity.length === severityLength) defaultSeverity = [];
 	filter.severity = defaultSeverity;
 	this.define.severityGuide = severity;
+	diseaseInfo.setSeverityGuide(severity);
 
 	this.define.infobox = $('#infobox');
 
 	this.define.currentFilter = filter;
 	this._fetchData(self.define.currentFilter, function(results) {
-		self.define.data = results;
-		self._clusterData(self.define.data);
+		self.define.diseaseInfo.setData(results);
+		self._clusterData(results);
 	});
 
 	google.maps.event.addDomListener(map, 'zoom_changed', function() {
@@ -253,8 +255,8 @@ DataManager.prototype = {
 						localityClusters[i].prepareMarker();
 						var marker = localityClusters[i].getMarker();
 						google.maps.event.addDomListener(marker, 'click', function(cluster) {
-							console.log(cluster);
 							self.define.map.setCenter(cluster.getLatLng());
+							self.define.diseaseInfo.openList(cluster);
 						});
 
 						self._attachInfobox(marker);
@@ -286,7 +288,7 @@ DataManager.prototype = {
 							self._displayToast(1, {
 								currentAddress: cluster.getAddress(),
 								currentCount: cluster.getCount()
-							}, 3000);
+							}, 2000);
 
 							if(cluster.getRegion().name !== "NCR") {
 								self.define.addressManager.setLocation({
@@ -329,7 +331,7 @@ DataManager.prototype = {
 							self._displayToast(1, {
 								currentAddress: cluster.getAddress(),
 								currentCount: cluster.getCount()
-							}, 3000);
+							}, 2000);
 
 							var zoom = (cluster.getNextType() === 2)? self.define.minProvinceZoom : self.define.minLocalityZoom;
 							self.define.map.setZoom(zoom);
@@ -359,7 +361,7 @@ DataManager.prototype = {
 						self._displayToast(1, {
 							currentAddress: cluster.getAddress(),
 							currentCount: cluster.getCount()
-						}, 3000);
+						}, 2000);
 					});
 
 					self._attachInfobox(marker);
@@ -368,7 +370,13 @@ DataManager.prototype = {
 					self._displayToast(1, {
 						currentAddress: countryCluster.getAddress(),
 						currentCount: countryCluster.getCount()
-					}, 3000);
+					}, 2000);
+
+					self.define.diseaseInfo.setClusters({
+						localityClusters: localityClusters,
+						provinceClusters: provinceClusters,
+						regionClusters: regionClusters
+					});
 				});
 			}
 		};
@@ -424,7 +432,7 @@ DataManager.prototype = {
 				position: cluster.getLatLng()
 			};
 			if(addressMore) details.addressMore = addressMore;
-			if(self.define.infoboxDisplayable) self._displayInfobox(details);
+			if(self.define.infoboxDisplayable) self._displayInfobox(details, cluster);
 		});
 
 		google.maps.event.addDomListener(marker, 'mouseout', function() {
@@ -588,7 +596,7 @@ DataManager.prototype = {
 				toast.css({
 					background: 'transparent',
 					margin: 0,
-					maxWidth: '220px',
+					width: '220px',
 					lineHeight: '12px',
 					fontSize: '12px',
 					textAlign: 'center'
@@ -608,9 +616,9 @@ DataManager.prototype = {
 					lineHeight: '30px'
 				});
 
-				var contentMessage = "There were no alerts posted for " + details.intendedAddress + ". Displaying alerts from " + details.currentAddress + ".";
+				var contentMessage = "There were no posts for " + details.intendedAddress + ". Displaying posts from " + details.currentAddress + ".";
 				actionCount.html(details.currentCount);
-				actionText.html("Alerts from this location");
+				actionText.html("Posts from this location");
 				content.html(contentMessage);
 				action.append(actionCount);
 				action.append(actionText);
@@ -646,9 +654,9 @@ DataManager.prototype = {
 					lineHeight: '30px'
 				});
 
-				var contentMessage = "Displaying alerts from " + details.currentAddress + ".";
+				var contentMessage = "Displaying posts from " + details.currentAddress + ".";
 				actionCount.html(details.currentCount);
-				actionText.html("Alerts from this location");
+				actionText.html("Posts from this location");
 				content.html(contentMessage);
 				action.append(actionCount);
 				action.append(actionText);
@@ -657,11 +665,11 @@ DataManager.prototype = {
 				break;
 		}
 
-		var durationSet = duration || 5000;
+		var durationSet = duration || 2000;
 		Materialize.toast(toast, durationSet, 'customize-toast');
 	},
 
-	_displayInfobox: function(details) {
+	_displayInfobox: function(details, cluster) {
 		var self = this;
 		var $infobox = this.define.infobox;
 		var addressMain = $infobox.find('.address-main');
@@ -699,6 +707,12 @@ DataManager.prototype = {
 		$infobox.on('mouseleave', function() {
 			self._hideInfobox();
 		});
+
+		var viewInfo = $infobox.find('#viewInfo');
+		$(viewInfo).off('click').on('click', function() {
+			self._hideInfoboxImmediately();
+			self.define.diseaseInfo.openList(cluster);
+		});
 	},
 
 	_hideInfobox: function() {
@@ -724,8 +738,8 @@ DataManager.prototype = {
 		this._fetchData(filterValues, function(results) {
 			self.define.previousFilter = JSON.parse(JSON.stringify(self.define.currentFilter));
 			self.define.currentFilter = filterValues;
-			self.define.data = results;
-			self._clusterData(self.define.data);
+			self.define.diseaseInfo.setData(results);
+			self._clusterData(results);
 		});
 	},
 
@@ -740,10 +754,6 @@ DataManager.prototype = {
 			var provinceId = locationValues.provinceId;
 			var regionId = locationValues.regionId;
 
-			// console.log(this.define.currentFilter.location);
-			// console.log(newFilter.location);
-			// console.log("Location changed");
-
 			var currentCluster;
 			var currentZoom;
 
@@ -753,7 +763,7 @@ DataManager.prototype = {
 				this._displayToast(1, {
 					currentAddress: 'the Philippines',
 					currentCount: currentCluster.getCount()
-				}, 3000);
+				}, 2000);
 			}
 			else if(provinceId === null) {
 				var index = this._findClusterIndex(1, regionId);
@@ -774,7 +784,7 @@ DataManager.prototype = {
 					this._displayToast(1, {
 						currentAddress: currentCluster.getAddress(),
 						currentCount: currentCluster.getCount()
-					}, 3000);
+					}, 2000);
 				}
 			}
 			else if(localityId === null) {
@@ -782,7 +792,7 @@ DataManager.prototype = {
 				if(index === -1) {
 					var regionIndex = this._findClusterIndex(1, regionId);
 					if(regionIndex === -1) {
-						currentCluster = this.defin.countryCluster;
+						currentCluster = this.define.countryCluster;
 						currentZoom = this.define.minRegionZoom;
 						this._displayToast(0, {
 							intendedAddress: locationValues.province,
@@ -827,17 +837,6 @@ DataManager.prototype = {
 			this.define.nextType = currentCluster.getNextType();
 			this.define.map.setCenter(currentCluster.getLatLng());	
 			this.define.map.setZoom(currentZoom);
-			/*
-				modify this.define.previousType...
-				zoom
-			*/
-
-			// this._fetchData(newFilter, function(results) {
-			// 	self.define.previousFilter = JSON.parse(JSON.stringify(self.define.currentFilter));
-			// 	self.define.currentFilter = newFilter;
-			// 	console.log(results);
-			// 	console.log("DataManager.setLocation: Data fetched");
-			// });
 		}
 	},
 

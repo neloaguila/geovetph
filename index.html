@@ -15,13 +15,13 @@
 				<div id="map-canvas"></div>
 				<div id="map-action">
 					<div id="address-manager">
-						<div id="country" class="card-panel valign-wrapper btn waves-effect waves-red grey lighten-5">
+						<div id="country" class="card-panel valign-wrapper btn waves-effect waves-red">
 							<div class="valign">Philippines</div>
 						</div>
 					</div>
 					<div id="data-filter">
-						<div id="data-filter-view" class="card grey lighten-5">
-							<div id="data-filter-btn" class="grey lighten-5 btn-flat valign-wrapper">
+						<div id="data-filter-view" class="card">
+							<div id="data-filter-btn" class="btn-flat valign-wrapper">
 								<i class="material-icons mdi-content-filter-list small valign"></i>
 							</div>
 							<div id="data-filter-wrapper">
@@ -130,23 +130,23 @@
 						</div>
 					</div>
 					<div id="zoom-control">
-						<div id="zoom-out" class="card-panel btn grey lighten-5 valign-wrapper">
+						<div id="zoom-out" class="card-panel btn valign-wrapper">
 							<i class="material-icons mdi-content-remove small valign"></i>
 						</div>
-						<div id="zoom-in" class="card-panel btn grey lighten-5 valign-wrapper">
+						<div id="zoom-in" class="card-panel btn valign-wrapper">
 							<i class="material-icons mdi-content-add small valign"></i>
 						</div>
 					</div>
-					<div id="legend-button" class="card-panel btn grey lighten-5 valign-wrapper right">
+					<div id="legend-button" class="card-panel btn valign-wrapper right">
 						<i class="material-icons mdi-image-details tiny valign"></i>
 					</div>
-					<div id="graph-button" class="card-panel btn grey lighten-5 valign-wrapper right">
+					<div id="graph-button" class="card-panel btn valign-wrapper right">
 						<i class="material-icons mdi-action-trending-up tiny valign"></i>
 					</div>
-					<div id="signup-button" class="card-panel btn light-green valign-wrapper right">
+					<div id="signup-button" class="card-panel btn valign-wrapper right">
 						Sign-up
 					</div>
-					<div id="login-button" class="card-panel btn light-green valign-wrapper right">
+					<div id="login-button" class="card-panel btn valign-wrapper right">
 						Log-in
 					</div>
 				</div>
@@ -156,93 +156,67 @@
 						<div class="address-more"></div>
 					</div>
 					<div class="card-content">
-						<div class="total-count grey lighten-4">
+						<div class="total-count">
 							<div class="count valign-wrapper">
 								<div class="valign"></div>
 							</div>
-							<div class="text">Alerts for this location</div>
+							<div class="text">Posts for this location</div>
 						</div>
 						<div class="severity-count"></div>
 					</div>
 					<div class="card-action">
-						<a class="btn-flat">View Disease List</a>
+						<a id="viewInfo" class="btn-flat">View Disease List</a>
 					</div>
 				</div>
-				<!--div id="disease-info">
-					<div id="info-wrapper">
+				<div id="disease-info" class="valign-wrapper">
+					<div id="info-wrapper" class="card-panel valign">
 						<div id="info-main">
 							<div id="info-list">
 								<div id="location-info">
-									<div id="address">
-										<div id="address-main">Metro Manila</div>
-										<div id="address-more">NCR, Philippines</div>
-									</div>
-									<div id="count">
-										<div id="total-count">
-											<div id="value">20</div>
-											<div id="text">Alerts for this location</div>
-										</div>
-										<div id="severity-count">
-											<div class="level">
-												<div class="value">10</div>
-												<div class="text">Alerts</div>
-											</div>
-											<div class="level">
-												<div class="value">5</div>
-												<div class="text">Warnings</div>
-											</div>
-											<div class="level">
-												<div class="value">5</div>
-												<div class="text">Outbreaks</div>
-											</div>
-										</div>
-									</div>
+									<div id="address-main"></div>
+									<div id="address-more"></div>
 								</div>
-								<ul>
-									<li>
-										<div class="disease-name">Disease #1</div>
-										<div class="animal-name">Swine</div>
-										<div class="severity-level"></div>
-									</li>
-									<li>
-										<div class="disease-name">Disease #2</div>
-										<div class="animal-name">Swine</div>
-										<div class="severity-level"></div>
-									</li>
-									<li>
-										<div class="disease-name">Disease #3</div>
-										<div class="animal-name">Swine</div>
-										<div class="severity-level"></div>
-									</li>
-									<li>
-										<div class="disease-name">Disease #4</div>
-										<div class="animal-name">Cattle</div>
-										<div class="severity-level"></div>
-									</li>
-									<li>
-										<div class="disease-name">Disease #5</div>
-										<div class="animal-name">Cattle</div>
-										<div class="severity-level"></div>
-									</li>
-									<li>
-										<div class="disease-name">Disease #6</div>
-										<div class="animal-name">Cattle</div>
-										<div class="severity-level"></div>
-									</li>
-									<li>
-										<div class="disease-name">Disease #7</div>
-										<div class="animal-name">Cattle</div>
-										<div class="severity-level"></div>
-									</li>
-								</ul>
+								<div id="disease-list">
+									<ul></ul>
+								</div>
+								<div id="count"></div>
 							</div>
 							<div id="info-disease">
-
+								<div id="severity">
+									<div class="severity-level"></div>
+								</div>
+								<div id="date">
+									<div class="date"></div>
+								</div>
+								<div id="info-more">
+									<div id="location">
+										Location
+										<div class="location-main"></div>
+										<div class="location-more"></div>
+									</div>
+									<div id="disease">
+										Disease
+										<div class="disease-name"></div>
+										<div class="strain"></div>
+									</div>
+									<div id="animal">
+										Animals affected
+										<div class="animal-group"></div>
+										<div class="animal-name"></div>
+									</div>
+									<div id="message">
+										<div class="message"></div>
+									</div>
+								</div>
 							</div>
 						</div>
-						<div id="info-close"></div>
+						<div id="info-close">
+							<div id="close-icon" class="valign-wrapper">
+								<div class="material-icons mdi-navigation-close valign"></div>
+							</div>
+						</div>
 					</div>
-				</div-->
+				</div>
 			</div>
 		</div>
 
@@ -258,6 +232,7 @@
 		<script type="text/javascript" src="assets/js/data_filter.js"></script>
 		<script type="text/javascript" src="assets/js/geo_marker.js"></script>
 		<script type="text/javascript" src="assets/js/geo_cluster.js"></script>
+		<script type="text/javascript" src="assets/js/disease_info.js"></script>
 		<script type="text/javascript" src="assets/js/data_manager.js"></script>
 		<script type="text/javascript" src="assets/js/geovetph_map.js"></script>
 		<script type="text/javascript" src="assets/js/index.js"></script>

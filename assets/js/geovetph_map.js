@@ -66,8 +66,10 @@ function GeoVetPHMap(options) {
 	var formatDate = function() {
 		// format default date
 		var defaults = ["Today", "Past 2 days", "Past 3 days", "Past 4 days", "Past 5 days", "Past 6 days", "Past week", "Past 2 weeks", "Past month, Others..."];
-		var defaultDate = (defaults.includes(self.define.defaultFilter.date.selected))?
-			self.define.defaultFilter.date.selected : "Past week";
+		var defaultDate;
+		for(var i=0; i<defaults.length; i++)
+			if(defaults[i] === self.define.defaultFilter.date.selected) defaultDate = self.define.defaultFilter.date.selected;
+		if(!defaultDate) defaultDate = "Past week";
 		var fromDate, toDate;
 
 		switch(defaultDate) {
@@ -108,7 +110,8 @@ function GeoVetPHMap(options) {
 	var geocoder = this.define.geocoder = new google.maps.Geocoder();
 	var addressManager = this.define.addressManager = new AddressManager(options.addressManager);
 	var dataFilter = this.define.dataFilter = new DataFilter(options.dataFilter, this.define.defaultFilter);
-	var dataManager = this.define.dataManager = new DataManager(map, addressManager, this.define.defaultFilter);
+	var diseaseInfo = this.define.diseaseInfo = new DiseaseInfo(options.diseaseInfo, this.define.loader);
+	var dataManager = this.define.dataManager = new DataManager(map, addressManager, this.define.defaultFilter, diseaseInfo);
 	var zoomControl = this.define.zoomControl = options.zoomControl;
 
 	map.mapTypes.set(mapStyleId, mapStyle);
@@ -177,9 +180,8 @@ GeoVetPHMap.prototype = {
 					var addressLength = address.length;
 					for(var i=0; i<addressLength; i++) {
 						var types = address[i].types;
-						if(types.includes(type)) {
-							return [address[i].short_name, address[i].long_name];
-						}
+						for(var i=0; i<types.length; i++)
+							if(types[i] === type) return [address[i].short_name, address[i].long_name];
 					}
 					return "";
 				};
@@ -276,5 +278,9 @@ GeoVetPHMap.prototype = {
 
 	getDataFilter: function() {
 		return this.define.dataFilter;
+	},
+
+	getDiseaseInfo: function() {
+		return this.define.diseaseInfo;
 	}
 }

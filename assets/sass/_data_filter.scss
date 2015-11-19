@@ -14,6 +14,7 @@
 		margin-bottom: 0;
 		will-change: width, height;
 		@include transition(width 0.3s ease-out, height 0.4s ease-out, box-shadow 0.2s ease-out);
+		background: color('grey', 'lighten-5');
 
 		#data-filter-btn {
 			width: 25px;
@@ -25,6 +26,7 @@
 			text-align: center;
 			@include color-text("light", "icon");
 			z-index: 10;
+			background: color('grey', 'lighten-5');
 
 			i.material-icons {
 				line-height: 25px;

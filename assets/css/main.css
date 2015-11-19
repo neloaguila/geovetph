@@ -8031,7 +8031,8 @@ body {
         line-height: 25px;
         margin-top: 10px;
         margin-bottom: 0;
-        color: rgba(0, 0, 0, 0.87); }
+        color: rgba(0, 0, 0, 0.87);
+        background: #fafafa; }
       #map-action #address-manager #regionList, #map-action #address-manager #provinceList {
         padding: 0;
         width: 180px;
@@ -8065,7 +8066,8 @@ body {
         -moz-transition: width 0.3s ease-out, height 0.4s ease-out, box-shadow 0.2s ease-out;
         -o-transition: width 0.3s ease-out, height 0.4s ease-out, box-shadow 0.2s ease-out;
         -ms-transition: width 0.3s ease-out, height 0.4s ease-out, box-shadow 0.2s ease-out;
-        transition: width 0.3s ease-out, height 0.4s ease-out, box-shadow 0.2s ease-out; }
+        transition: width 0.3s ease-out, height 0.4s ease-out, box-shadow 0.2s ease-out;
+        background: #fafafa; }
         #map-action #data-filter-view #data-filter-btn {
           width: 25px;
           height: 25px;
@@ -8075,7 +8077,8 @@ body {
           padding: 0;
           text-align: center;
           color: rgba(0, 0, 0, 0.54);
-          z-index: 10; }
+          z-index: 10;
+          background: #fafafa; }
           #map-action #data-filter-view #data-filter-btn i.material-icons {
             line-height: 25px; }
         #map-action #data-filter-view.open {
@@ -8285,7 +8288,8 @@ body {
         margin: 10px 0 0 0;
         padding: 0;
         text-align: center;
-        color: rgba(0, 0, 0, 0.54); }
+        color: rgba(0, 0, 0, 0.54);
+        background: #fafafa; }
         #map-action #zoom-control > div i.material-icons {
           line-height: 25px; }
       #map-action #zoom-control #zoom-in {
@@ -8294,15 +8298,21 @@ body {
       height: 25px;
       margin: 10px 10px 0 0;
       line-height: 25px; }
+    #map-action #login-button {
+      background: #8bc34a; }
+    #map-action #signup-button {
+      background: #8bc34a; }
     #map-action #graph-button {
       color: rgba(0, 0, 0, 0.54);
       width: 25px;
-      padding: 0; }
+      padding: 0;
+      background: #fafafa; }
     #map-action #legend-button {
       color: rgba(0, 0, 0, 0.54);
       width: 25px;
       padding: 0;
-      margin-right: 20px; }
+      margin-right: 20px;
+      background: #fafafa; }
 
 #infobox {
   position: absolute;
@@ -8329,7 +8339,8 @@ body {
       height: 100%;
       position: absolute;
       left: 0;
-      border-right: 1px solid rgba(0, 0, 0, 0.1); }
+      border-right: 1px solid rgba(0, 0, 0, 0.1);
+      background: #f5f5f5; }
       #infobox .card-content .total-count .count {
         height: calc(100% - 30px);
         font-size: 35px; }
@@ -8370,5 +8381,201 @@ body {
       margin: 0;
       width: 100%;
       text-align: center; }
+
+#disease-info {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: 500;
+  right: -100%;
+  -webkit-transition: right 0.3s ease-out;
+  -moz-transition: right 0.3s ease-out;
+  -o-transition: right 0.3s ease-out;
+  -ms-transition: right 0.3s ease-out;
+  transition: right 0.3s ease-out; }
+  #disease-info #info-wrapper {
+    height: 90%;
+    width: 80%;
+    margin: 0 auto;
+    position: relative;
+    padding: 0; }
+    #disease-info #info-wrapper #info-main {
+      height: 100%;
+      width: calc(100% - 34px);
+      display: inline-block;
+      vertical-align: top; }
+      #disease-info #info-wrapper #info-main #info-list {
+        width: 50%;
+        height: 100%;
+        display: inline-block;
+        vertical-align: top;
+        font-size: 0.7em; }
+        #disease-info #info-wrapper #info-main #info-list #location-info {
+          width: 100%;
+          height: 65px;
+          text-align: center;
+          padding: 10px;
+          padding-top: 15px;
+          background: #323232;
+          color: white;
+          border-top-left-radius: 2px; }
+          #disease-info #info-wrapper #info-main #info-list #location-info #address-main {
+            font-size: 16px; }
+          #disease-info #info-wrapper #info-main #info-list #location-info #address-more {
+            font-size: 11px; }
+        #disease-info #info-wrapper #info-main #info-list #disease-list {
+          width: 100%;
+          height: calc(100% - 90px);
+          overflow-y: scroll;
+          background: #fafafa;
+          cursor: pointer;
+          position: relative; }
+          #disease-info #info-wrapper #info-main #info-list #disease-list > ul {
+            width: 100%;
+            padding: 5px; }
+            #disease-info #info-wrapper #info-main #info-list #disease-list > ul li.list-divider {
+              line-height: 20px;
+              text-align: center; }
+            #disease-info #info-wrapper #info-main #info-list #disease-list > ul li.list-divider.list-location {
+              width: 100%;
+              border-left: 4px solid rgba(0, 0, 0, 0.7);
+              margin-bottom: 5px; }
+              #disease-info #info-wrapper #info-main #info-list #disease-list > ul li.list-divider.list-location .list-divider-text {
+                background: #eeeeee;
+                color: rgba(0, 0, 0, 0.87); }
+              #disease-info #info-wrapper #info-main #info-list #disease-list > ul li.list-divider.list-location .list-divider-inner {
+                width: 100%;
+                padding-left: 5px;
+                padding-top: 5px; }
+            #disease-info #info-wrapper #info-main #info-list #disease-list > ul li.list-divider.list-date {
+              background: #616161;
+              color: white; }
+            #disease-info #info-wrapper #info-main #info-list #disease-list > ul li:not(.list-divider) {
+              width: 100%;
+              height: 30px;
+              line-height: 30px;
+              margin-top: 2px;
+              margin-bottom: 2px;
+              -webkit-transition: background-color 0.2s ease-out;
+              -moz-transition: background-color 0.2s ease-out;
+              -o-transition: background-color 0.2s ease-out;
+              -ms-transition: background-color 0.2s ease-out;
+              transition: background-color 0.2s ease-out;
+              background: #bdbdbd;
+              text-align: left; }
+              #disease-info #info-wrapper #info-main #info-list #disease-list > ul li:not(.list-divider):not(.selected):hover {
+                background-color: #8bc34a;
+                color: white; }
+              #disease-info #info-wrapper #info-main #info-list #disease-list > ul li:not(.list-divider).selected {
+                height: 45px;
+                line-height: 45px;
+                background-color: #689f38;
+                color: white; }
+              #disease-info #info-wrapper #info-main #info-list #disease-list > ul li:not(.list-divider) .severity-level {
+                width: 8%;
+                height: 100%;
+                display: inline-block;
+                position: relative; }
+                #disease-info #info-wrapper #info-main #info-list #disease-list > ul li:not(.list-divider) .severity-level .severity-icon {
+                  width: 12px;
+                  height: 12px;
+                  border-radius: 50%;
+                  position: absolute;
+                  top: calc((100% - 12px) / 2);
+                  right: 5px; }
+              #disease-info #info-wrapper #info-main #info-list #disease-list > ul li:not(.list-divider) .disease-name {
+                width: 65%;
+                height: 100%;
+                display: inline-block;
+                vertical-align: top;
+                padding-left: 10px; }
+              #disease-info #info-wrapper #info-main #info-list #disease-list > ul li:not(.list-divider) .animal-name {
+                width: 23%;
+                height: 100%;
+                display: inline-block;
+                vertical-align: top;
+                padding-left: 10px; }
+        #disease-info #info-wrapper #info-main #info-list #count {
+          height: 25px;
+          background: #323232;
+          color: #eee;
+          text-align: center;
+          font-weight: lighter;
+          line-height: 25px;
+          border-bottom-left-radius: 2px; }
+      #disease-info #info-wrapper #info-main #info-disease {
+        width: 49%;
+        height: 100%;
+        display: inline-block;
+        vertical-align: top;
+        padding: 10px;
+        font-size: 11px;
+        position: relative; }
+        #disease-info #info-wrapper #info-main #info-disease #severity {
+          width: 45%;
+          height: 30px;
+          display: inline-block;
+          position: relative; }
+          #disease-info #info-wrapper #info-main #info-disease #severity .severity-level {
+            width: 70%;
+            height: 80%;
+            color: #fff;
+            font-size: 12px;
+            text-align: center;
+            line-height: 24px;
+            border-radius: 2px;
+            text-transform: uppercase;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
+            position: absolute;
+            top: 10%; }
+        #disease-info #info-wrapper #info-main #info-disease #date {
+          width: 54%;
+          height: 30px;
+          display: inline-block;
+          vertical-align: top; }
+          #disease-info #info-wrapper #info-main #info-disease #date .date {
+            line-height: 30px;
+            font-size: 14px;
+            text-align: right; }
+        #disease-info #info-wrapper #info-main #info-disease #info-more {
+          width: 100%;
+          height: calc(100% - 30px);
+          overflow: auto; }
+          #disease-info #info-wrapper #info-main #info-disease #info-more #location, #disease-info #info-wrapper #info-main #info-disease #info-more #disease, #disease-info #info-wrapper #info-main #info-disease #info-more #animal {
+            width: 100%;
+            font-size: 10px;
+            padding: 5px 10px;
+            border-bottom: 1px solid #eee; }
+          #disease-info #info-wrapper #info-main #info-disease #info-more #location .location-main, #disease-info #info-wrapper #info-main #info-disease #info-more #disease .disease-name, #disease-info #info-wrapper #info-main #info-disease #info-more #animal .animal-group {
+            font-size: 14px;
+            text-align: right; }
+          #disease-info #info-wrapper #info-main #info-disease #info-more #location .location-more, #disease-info #info-wrapper #info-main #info-disease #info-more #disease .strain, #disease-info #info-wrapper #info-main #info-disease #info-more #animal .animal-name {
+            font-size: 11px;
+            text-align: right; }
+          #disease-info #info-wrapper #info-main #info-disease #info-more #location {
+            padding-top: 20px; }
+          #disease-info #info-wrapper #info-main #info-disease #info-more #message {
+            width: 100%;
+            padding: 15px 10px;
+            text-align: justify;
+            font-size: 14px; }
+    #disease-info #info-wrapper #info-close {
+      height: 100%;
+      width: 30px;
+      display: inline-block;
+      vertical-align: top;
+      background: #fafafa;
+      border-top-right-radius: 2px;
+      border-bottom-right-radius: 2px; }
+      #disease-info #info-wrapper #info-close #close-icon {
+        width: 100%;
+        height: 30px;
+        cursor: pointer; }
+        #disease-info #info-wrapper #info-close #close-icon:hover {
+          background: #eeeeee; }
+          #disease-info #info-wrapper #info-close #close-icon:hover > div {
+            color: black; }
+        #disease-info #info-wrapper #info-close #close-icon > div {
+          margin: 0 auto; }
 
 /*# sourceMappingURL=main.css.map */
